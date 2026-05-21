@@ -1,0 +1,2 @@
+# System packages for Streamlit Cloud (if tree-sitter native build needed)
+# git is usually pre-installed on Streamlit Cloud
