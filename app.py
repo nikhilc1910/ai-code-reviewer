@@ -324,6 +324,8 @@ def render_comment(c: dict, show_verify: bool = False) -> None:
 
 # --- SIDEBAR ---
 st.sidebar.title("⚙️ Settings")
+import os
+st.sidebar.caption(f"API: {'✅' if os.environ.get('GROQ_API_KEY') else '❌ missing'}")
 repo_url = st.sidebar.text_input("GitHub Repository URL", placeholder="https://github.com/user/repo")
 run_btn = st.sidebar.button("🚀 Run Review", type="primary", use_container_width=True)
 
