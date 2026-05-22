@@ -149,1506 +149,1203 @@ if "anthropic_api_key" not in st.session_state:
     st.session_state["anthropic_api_key"] = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
-# CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
-st.markdown(
-    textwrap.dedent("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    
-    :root {
-        --bg: #05070f;
-        --surface: #0b0f19;
-        --glass: rgba(255, 255, 255, 0.03);
-        --border: rgba(99, 179, 237, 0.12);
-        --accent: #3b82f6;
-        --accent2: #06b6d4;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --critical: #f87171;
-        --major: #fb923c;
-        --minor: #facc15;
-        --success: #4ade80;
-    }
-    
-    /* Base backgrounds & fonts with tech fade slide-in animation */
-    @keyframes techSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(15px);
-            filter: blur(4px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0);
-        }
-    }
-    
-    html, body {
-        background-color: var(--bg) !important;
-        color: var(--text) !important;
-        font-family: 'Space Grotesk', sans-serif !important;
-    }
-    
-    [data-testid="stHeader"], [data-testid="stAppViewContainer"] {
-        background-color: transparent !important;
-    }
-    
-    /* Keyframe animations for blurred gradient blobs floating in the background */
-    @keyframes float-slow {
-        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-        50% { transform: translate(60px, 80px) scale(1.15) rotate(180deg); }
-        100% { transform: translate(-40px, -60px) scale(0.9) rotate(360deg); }
-    }
-    @keyframes float-medium {
-        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-        50% { transform: translate(-80px, 60px) scale(0.9) rotate(-120deg); }
-        100% { transform: translate(50px, -70px) scale(1.1) rotate(-240deg); }
-    }
-    @keyframes float-reverse {
-        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-        50% { transform: translate(70px, -90px) scale(0.85) rotate(240deg); }
-        100% { transform: translate(-60px, 80px) scale(1.1) rotate(480deg); }
-    }
-    @keyframes float-fast {
-        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
-        50% { transform: translate(-90px, -50px) scale(1.1) rotate(-180deg); }
-        100% { transform: translate(40px, 90px) scale(0.95) rotate(-360deg); }
-    }
-    
-    body::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: linear-gradient(
-            to bottom,
-            rgba(6, 182, 212, 0) 0%,
-            rgba(6, 182, 212, 0.03) 10%,
-            rgba(6, 182, 212, 0) 20%
-        );
-        background-size: 100% 200%;
-        animation: techScanline 12s linear infinite;
-        pointer-events: none;
-        z-index: -1;
-    }
-    
-    @keyframes techScanline {
-        0% { background-position: 0% 0%; }
-        100% { background-position: 0% 200%; }
-    }
-    
-    /* Apply tech slide-in animations selectively to content containers instead of the root view */
-    .main-title-container, .stat-card, details.finding-detail-box {
-        animation: techSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    
-    /* Global visibility overrides for captions, titles, sidebar items, and controls to eliminate dark-on-dark text */
-    [data-testid="stSidebar"] p, 
-    [data-testid="stSidebar"] span, 
-    [data-testid="stSidebar"] label, 
-    [data-testid="stSidebar"] div,
-    [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
-    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
-    [data-testid="stSidebar"] [class*="stCaption"],
-    [data-testid="stSidebar"] [class*="stCaption"] *,
-    [data-testid="stSidebar"] caption {
-        color: #cbd5e1 !important;
-    }
-    
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] h4,
-    [data-testid="stSidebar"] h5,
-    [data-testid="stSidebar"] strong {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-    }
-    
-    [data-testid="stSidebar"] div[data-testid="stCaptionContainer"] p,
-    [data-testid="stSidebar"] [class*="stCaption"] p {
-        color: #94a3b8 !important;
-        font-size: 0.85rem !important;
-        font-weight: 500 !important;
-    }
-    
-    /* Header top-bar button and icon visibility fixes (e.g. Share, Star, Edit, Github icons) */
-    header[data-testid="stHeader"] button,
-    header[data-testid="stHeader"] a,
-    header[data-testid="stHeader"] svg,
-    header[data-testid="stHeader"] svg *,
-    header[data-testid="stHeader"] button *,
-    header[data-testid="stHeader"] a *,
-    header[data-testid="stHeader"] span,
-    header[data-testid="stHeader"] div {
-        color: #cbd5e1 !important;
-        fill: #cbd5e1 !important;
-        stroke: #cbd5e1 !important;
-        transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease !important;
-    }
-    header[data-testid="stHeader"] button:hover *,
-    header[data-testid="stHeader"] a:hover *,
-    header[data-testid="stHeader"] button:hover,
-    header[data-testid="stHeader"] a:hover {
-        color: #ffffff !important;
-        fill: #ffffff !important;
-        stroke: #ffffff !important;
-    }
-    
-    /* Code and details use JetBrains Mono */
-    code, pre, .finding-index, .finding-progress-bar, .finding-confidence-text, .finding-tag, .stat-card-change {
-        font-family: 'JetBrains Mono', monospace !important;
-    }
-    
-    /* Sidebar styling */
-    [data-testid="stSidebar"] {
-        background-color: var(--surface) !important;
-        border-right: 1px solid var(--border) !important;
-    }
-    [data-testid="stSidebar"] > div {
-        background-color: var(--surface) !important;
-    }
-    
-    /* Headings */
-    h1, h2, h3, h4, h5, h6, [data-testid="stWidgetLabel"] {
-        font-family: 'Space Grotesk', sans-serif !important;
-        color: var(--text) !important;
-    }
-    
-    /* Hide the radio button circle indicators in the sidebar navigation completely (first-child targets the circle wrapper) */
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label > *:first-child {
-        display: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
-    }
-    
-    /* Sidebar radio button styling transformed into custom navigation tabs */
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] {
-        gap: 0.5rem;
-    }
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label {
-        background: transparent !important;
-        border: 1px solid transparent !important;
-        padding: 0.7rem 1rem !important;
-        border-radius: 8px !important;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, border-color 0.25s ease !important;
-        cursor: pointer !important;
-        display: flex !important;
-        align-items: center !important;
-        transform-origin: left center;
-    }
-    
-    /* Fix text contrast & hover-zoom in left column navigation tabs */
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] *,
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
-        color: #94a3b8 !important; /* light grey unselected */
-        font-weight: 500 !important;
-        font-size: 1.05rem !important;
-        transition: color 0.25s ease-in-out, transform 0.25s ease-in-out !important;
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border-color: rgba(99, 179, 237, 0.1) !important;
-        transform: scale(1.05) !important;
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] *,
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] {
-        color: #ffffff !important; /* white on hover */
-    }
-    
-    /* Modern bulletproof selected tab selector using :has() */
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {
-        background: rgba(59, 130, 246, 0.1) !important;
-        border: 1px solid rgba(59, 130, 246, 0.25) !important;
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] *,
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] {
-        color: var(--accent2) !important; /* bright cyan when selected */
-        font-weight: 700 !important;
-    }
-    
-    /* Style all Streamlit input controls (text inputs, selects, multiselects) to remove "white boxes" and match the dark theme */
-    div[data-testid="stTextInput"] input,
-    div[data-testid="stTextArea"] textarea,
-    div[data-testid="stSelectbox"] select,
-    div[data-testid="stSelectbox"] div[data-baseweb="select"],
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"],
-    div[data-baseweb="select"] > div {
-        background-color: #0e1220 !important;
-        color: var(--text) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 8px !important;
-        transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
-    }
-    
-    /* Input field focus glow tech animations */
-    div[data-testid="stTextInput"] input:focus,
-    div[data-testid="stSelectbox"] div[data-baseweb="select"]:focus,
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"]:focus {
-        border-color: var(--accent2) !important;
-        box-shadow: 0 0 12px rgba(6, 182, 212, 0.25) !important;
-    }
-    
-    /* Input placeholder styling */
-    div[data-testid="stTextInput"] input::placeholder {
-        color: #64748b !important;
-    }
-    
-    /* Multiselect tags styling */
-    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
-        background-color: rgba(6, 182, 212, 0.12) !important;
-        border: 1px solid rgba(6, 182, 212, 0.25) !important;
-        color: var(--accent2) !important;
-        border-radius: 4px !important;
-    }
-    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] span {
-        color: var(--accent2) !important;
-    }
-    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] svg {
-        fill: var(--accent2) !important;
-    }
-    div[data-testid="stMultiSelect"] input {
-        background-color: transparent !important;
-        color: var(--text) !important;
-    }
-    
-    /* Dropdown/Listbox popover menus styling for selects and multiselects */
-    div[data-baseweb="popover"] ul,
-    div[data-baseweb="menu"] {
-        background-color: #0e1220 !important;
-        border: 1px solid var(--border) !important;
-    }
-    div[data-baseweb="popover"] li,
-    div[data-baseweb="menu"] li {
-        color: var(--text) !important;
-        background-color: transparent !important;
-        transition: background-color 0.2s ease !important;
-    }
-    div[data-baseweb="popover"] li:hover,
-    div[data-baseweb="menu"] li:hover {
-        background-color: rgba(6, 182, 212, 0.1) !important;
-        color: var(--accent2) !important;
-    }
-    
-    /* Animations */
-    @keyframes fadeSlideUp {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
-        }
-        70% {
-            box-shadow: 0 0 0 8px rgba(6, 182, 212, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
-        }
-    }
-    
-    /* Primary RUN NEW REVIEW button styling */
-    div[data-testid="stSidebar"] button[kind="primary"] {
-        animation: pulse 2.5s infinite !important;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%) !important;
-        color: white !important;
-        border: none !important;
-        font-family: 'Space Grotesk', sans-serif !important;
-        font-weight: 600 !important;
-        border-radius: 8px !important;
-        padding: 0.75rem 1.2rem !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
-        transition: all 0.3s ease !important;
-    }
-    div[data-testid="stSidebar"] button[kind="primary"]:hover {
-        box-shadow: 0 0 25px rgba(6, 182, 212, 0.5) !important;
-        transform: translateY(-2px) !important;
-    }
-    
-    /* Outlined buttons */
-    div[data-testid="stDownloadButton"] > button,
-    button[data-testid="stDownloadButton"] {
-        background-color: transparent !important;
-        border: 1px solid var(--border) !important;
-        color: var(--accent2) !important;
-        border-radius: 6px !important;
-        transition: all 0.2s ease !important;
-    }
-    div[data-testid="stDownloadButton"] > button:hover,
-    button[data-testid="stDownloadButton"]:hover {
-        background-color: rgba(6, 182, 212, 0.08) !important;
-        border-color: var(--accent2) !important;
-    }
-    
-    /* Custom Stat Cards styling with hover-zoom & tech scanline sweep transitions */
-    .stat-card {
-        background: var(--glass);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 1.2rem;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
-        position: relative;
-        overflow: hidden;
-    }
-    .stat-card::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(6, 182, 212, 0.08) 50%,
-            rgba(255, 255, 255, 0) 100%
-        );
-        transform: skewX(-25deg);
-        transition: 0.75s;
-    }
-    .stat-card:hover::after {
-        left: 120%;
-    }
-    .stat-card:hover {
-        border-color: var(--accent) !important;
-        transform: scale(1.04) !important;
-        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2) !important;
-        z-index: 2;
-    }
-    @keyframes neonBorderGlow {
-        0% {
-            border-color: rgba(6, 182, 212, 0.2);
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
-        }
-        50% {
-            border-color: rgba(6, 182, 212, 0.6);
-            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
-        }
-        100% {
-            border-color: rgba(6, 182, 212, 0.2);
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
-        }
-    }
-    .stat-glow {
-        animation: neonBorderGlow 3s infinite ease-in-out !important;
-    }
-    .stat-card-title {
-        color: var(--muted);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-    }
-    .stat-card-value-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.3rem;
-    }
-    .stat-card-value {
-        color: var(--text);
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.9rem;
-        font-weight: 700;
-        transition: transform 0.2s ease, color 0.2s ease !important;
-    }
-    .stat-card:hover .stat-card-value {
-        color: var(--accent2) !important;
-        transform: scale(1.05) !important;
-        display: inline-block;
-    }
-    .stat-card-emoji {
-        font-size: 1.4rem;
-    }
-    .stat-card-change {
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-    
-    /* Interactive HTML findings accordion panel with hover-zoom and scanline sweep */
-    details.finding-detail-box {
-        background: var(--glass);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        margin-bottom: 0.8rem;
-        padding: 0.85rem 1.1rem;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
-        position: relative;
-        overflow: hidden;
-    }
-    details.finding-detail-box::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 30%;
-        height: 100%;
-        background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(59, 130, 246, 0.05) 50%,
-            rgba(255, 255, 255, 0) 100%
-        );
-        transform: skewX(-25deg);
-        transition: 0.6s;
-    }
-    details.finding-detail-box:hover::after {
-        left: 120%;
-    }
-    details.finding-detail-box:hover {
-        border-color: rgba(6, 182, 212, 0.4) !important;
-        transform: scale(1.015) !important;
-        box-shadow: 0 6px 24px rgba(6, 182, 212, 0.12) !important;
-    }
-    details.finding-detail-box[open] {
-        border-color: var(--accent);
-        background: rgba(11, 15, 25, 0.6);
-    }
-    summary.finding-summary {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        list-style: none;
-        user-select: none;
-    }
-    summary.finding-summary::-webkit-details-marker {
-        display: none;
-    }
-    .finding-summary-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-grow: 1;
-        overflow: hidden;
-        margin-right: 20px;
-    }
-    .finding-index {
-        color: var(--muted);
-        font-weight: 700;
-        font-size: 0.9rem;
-    }
-    
-    /* Severity badge pulse animations */
-    @keyframes badgePulse {
-        0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
-        70% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
-    }
-    
-    .finding-severity-badge {
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.72rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        min-width: 95px;
-        justify-content: center;
-    }
-    .sev-critical {
-        background: rgba(248, 113, 113, 0.12);
-        color: var(--critical);
-        border: 1px solid rgba(248, 113, 113, 0.25);
-        animation: badgePulse 2s infinite !important;
-    }
-    .sev-major {
-        background: rgba(251, 146, 60, 0.12);
-        color: var(--major);
-        border: 1px solid rgba(251, 146, 60, 0.25);
-    }
-    .sev-minor {
-        background: rgba(250, 204, 21, 0.12);
-        color: var(--minor);
-        border: 1px solid rgba(250, 204, 21, 0.25);
-    }
-    .sev-info {
-        background: rgba(74, 222, 128, 0.12);
-        color: var(--success);
-        border: 1px solid rgba(74, 222, 128, 0.25);
-    }
-    
-    /* Hover effects for important findings text */
-    .finding-title {
-        color: var(--text);
-        font-size: 0.95rem;
-        font-weight: 500;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: transform 0.25s ease, color 0.25s ease, padding-left 0.25s ease !important;
-        position: relative;
-    }
-    .finding-title::before {
-        content: ">";
-        color: var(--accent2);
-        opacity: 0;
-        position: absolute;
-        left: -15px;
-        transition: opacity 0.25s ease, left 0.25s ease !important;
-    }
-    .finding-title:hover {
-        color: var(--accent2) !important;
-        padding-left: 15px !important;
-    }
-    .finding-title:hover::before {
-        opacity: 1;
-        left: 0;
-    }
-    
-    .finding-line {
-        color: var(--muted);
-        font-size: 0.8rem;
-        margin-left: 5px;
-        transition: color 0.2s ease !important;
-    }
-    .finding-line:hover {
-        color: #ffffff !important;
-    }
-    .finding-summary-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    .finding-progress-bar {
-        color: var(--accent2);
-        letter-spacing: -2px;
-        font-size: 0.95rem;
-        font-weight: bold;
-    }
-    .finding-confidence-text {
-        color: var(--text);
-        font-weight: 600;
-        font-size: 0.9rem;
-        min-width: 35px;
-        text-align: right;
-    }
-    .finding-content {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        animation: fadeSlideUp 0.3s ease-out forwards;
-    }
-    .finding-tags {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 0.8rem;
-    }
-    .finding-tag {
-        background: rgba(59, 130, 246, 0.08);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        color: #93c5fd;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-    }
-    .finding-description {
-        background: rgba(255, 255, 255, 0.015);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.8rem;
-        color: var(--text);
-        font-size: 0.9rem;
-        margin-bottom: 0.8rem;
-        line-height: 1.5;
-    }
-    .finding-suggestion-box {
-        background: rgba(6, 182, 212, 0.03);
-        border-left: 3px solid var(--accent2);
-        border-radius: 0 6px 6px 0;
-        padding: 0.8rem;
-        color: var(--text);
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-    
-    /* Main title and logo transition styles for hover-zoom */
-    .main-title-container {
-        font-size: 2.2rem;
-        font-weight: 700;
-        font-family: 'Space Grotesk', sans-serif;
-        letter-spacing: -0.5px;
-        margin-bottom: 5px;
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease !important;
-        display: inline-block;
-        transform-origin: left center;
-    }
-    .main-title-container:hover {
-        transform: scale(1.03) !important;
-        color: var(--accent2) !important;
-    }
-    
-    .sidebar-logo-container {
-        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        display: inline-block;
-        transform-origin: left center;
-    }
-    .sidebar-logo-container:hover {
-        transform: scale(1.05) !important;
-    }
-    
-    /* Scrollbar overrides */
-    ::-webkit-scrollbar {
-        width: 5px !important;
-        height: 5px !important;
-    }
-    ::-webkit-scrollbar-track {
-        background: transparent !important;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.3) !important;
-        border-radius: 3px !important;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--accent2) !important;
-    }
-    </style>
-    """),
-    unsafe_allow_html=True
-)
 
-st.markdown(
-    textwrap.dedent(r"""
-    <img src="x" onerror="
-        if (!window.quantumBgInitialized || !document.getElementById('particle-canvas')) {
-            window.quantumBgInitialized = true;
-            (function() {
-                // 1. Clean up any existing elements to prevent duplicates
-                ['quantum-bg-styles', 'quantum-blobs', 'grid-overlay', 'noise-overlay', 'particle-canvas', 'ripple-canvas', 'config-toggle', 'config-panel', 'hud-overlay', 'mouse-hint', 'quantum-noise-svg'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.remove();
-                });
+# Import components
+import streamlit.components.v1 as components
 
-                // 2. Inject Dynamic Style Block for background elements
-                const style = document.createElement('style');
-                style.id = 'quantum-bg-styles';
-                style.textContent = `
-                    @keyframes scanlines {
-                        0% { background-position: 0 0; }
-                        100% { background-position: 0 100%; }
-                    }
-                    @keyframes pulse-dot {
-                        0%, 100% { opacity: 0.4; }
-                        50% { opacity: 1; transform: scale(1.2); }
-                    }
-                    @keyframes bounce-slow {
-                        0%, 100% { transform: translate(-50%, 0); }
-                        50% { transform: translate(-50%, -6px); }
-                    }
-                    .quantum-blob {
-                        position: absolute;
-                        border-radius: 50%;
-                        mix-blend-mode: screen;
-                        will-change: transform;
-                    }
-                    .grid-overlay {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100vw;
-                        height: 100vh;
-                        z-index: -7;
-                        pointer-events: none;
-                        background-size: 50px 50px;
-                        background-image: 
-                            linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                            linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-                        mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
-                        -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
-                    }
-                    .grid-overlay::after {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(
-                            to bottom,
-                            transparent 0%,
-                            rgba(255, 255, 255, 0.005) 50%,
-                            transparent 100%
-                        );
-                        background-size: 100% 20px;
-                        animation: scanlines 4s linear infinite;
-                    }
-                    .config-toggle-btn {
-                        position: fixed;
-                        top: 80px;
-                        right: 24px;
-                        background: rgba(15, 23, 42, 0.45);
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 10px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        cursor: pointer;
-                        z-index: 999999;
-                        backdrop-filter: blur(12px);
-                        -webkit-backdrop-filter: blur(12px);
-                        transition: border-color 0.3s, background-color 0.3s;
-                    }
-                    .config-toggle-btn:hover {
-                        border-color: #06b6d4;
-                        background: rgba(15, 23, 42, 0.7);
-                    }
-                    .config-toggle-btn svg {
-                        width: 18px;
-                        height: 18px;
-                        stroke: #94a3b8;
-                        transition: stroke 0.3s, transform 0.5s ease;
-                    }
-                    .config-toggle-btn:hover svg {
-                        stroke: #ffffff;
-                        transform: rotate(45deg);
-                    }
-                    .config-panel {
-                        position: fixed;
-                        top: 130px;
-                        right: 24px;
-                        background: rgba(15, 23, 42, 0.6);
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                        border-radius: 16px;
-                        padding: 1.2rem;
-                        width: 250px;
-                        backdrop-filter: blur(20px);
-                        -webkit-backdrop-filter: blur(20px);
-                        z-index: 999999;
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                        display: flex;
-                        flex-direction: column;
-                        gap: 1rem;
+components.html(
+    """
+    <script>
+        (function() {
+            const parentWindow = window.parent;
+            const parentDoc = parentWindow.document;
+
+            // 1. Clean up any existing elements to prevent duplicates
+            ['quantum-bg-styles', 'quantum-blobs', 'grid-overlay', 'noise-overlay', 'particle-canvas', 'ripple-canvas', 'config-toggle', 'config-panel', 'hud-overlay', 'mouse-hint', 'quantum-noise-svg'].forEach(id => {
+                const el = parentDoc.getElementById(id);
+                if (el) el.remove();
+            });
+
+            // 2. Inject Dynamic Style Block for background & theme elements
+            const style = parentDoc.createElement('style');
+            style.id = 'quantum-bg-styles';
+            style.textContent = `
+                @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+                
+                :root {
+                    --bg: #05070f;
+                    --surface: #0b0f19;
+                    --glass: rgba(255, 255, 255, 0.03);
+                    --border: rgba(99, 179, 237, 0.12);
+                    --accent: #3b82f6;
+                    --accent2: #06b6d4;
+                    --text: #f1f5f9;
+                    --muted: #94a3b8;
+                    --critical: #f87171;
+                    --major: #fb923c;
+                    --minor: #facc15;
+                    --success: #4ade80;
+                }
+                
+                @keyframes techSlideIn {
+                    from {
                         opacity: 0;
-                        transform: translateY(-10px);
-                        pointer-events: none;
-                        transition: opacity 0.4s ease, transform 0.4s ease;
+                        transform: translateY(15px);
+                        filter: blur(4px);
                     }
-                    .config-panel.visible {
+                    to {
                         opacity: 1;
                         transform: translateY(0);
-                        pointer-events: all;
+                        filter: blur(0);
                     }
-                    .config-title {
-                        font-size: 0.75rem;
-                        font-weight: 700;
-                        text-transform: uppercase;
-                        letter-spacing: 0.1em;
-                        color: #ffffff;
-                        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-                        padding-bottom: 0.5rem;
-                    }
-                    .control-group {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 0.3rem;
-                    }
-                    .control-label {
-                        font-size: 0.65rem;
-                        color: #94a3b8;
-                        display: flex;
-                        justify-content: space-between;
-                    }
-                    .control-slider {
-                        -webkit-appearance: none;
-                        width: 100%;
-                        height: 4px;
-                        border-radius: 2px;
-                        background: rgba(255,255,255,0.1);
-                        outline: none;
-                    }
-                    .control-slider::-webkit-slider-thumb {
-                        -webkit-appearance: none;
-                        appearance: none;
-                        width: 12px;
-                        height: 12px;
-                        border-radius: 50%;
-                        background: #06b6d4;
-                        cursor: pointer;
-                        transition: transform 0.1s;
-                    }
-                    .control-slider::-webkit-slider-thumb:hover {
-                        transform: scale(1.3);
-                    }
-                    .theme-selector {
-                        display: flex;
-                        gap: 0.4rem;
-                        margin-top: 0.2rem;
-                    }
-                    .theme-btn {
-                        flex: 1;
-                        padding: 0.4rem 0;
-                        border: 1px solid rgba(255, 255, 255, 0.08);
-                        background: rgba(255, 255, 255, 0.02);
-                        color: #94a3b8;
-                        font-family: inherit;
-                        font-size: 0.6rem;
-                        font-weight: 600;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        transition: all 0.2s;
-                    }
-                    .theme-btn.active {
-                        background: #06b6d4;
-                        border-color: #06b6d4;
-                        color: #030712;
-                        font-weight: 700;
-                    }
-                    .mouse-hint {
-                        position: fixed;
-                        bottom: 60px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        gap: 0.4rem;
-                        font-family: 'JetBrains Mono', monospace;
-                        font-size: 0.65rem;
-                        color: rgba(148, 163, 184, 0.35);
-                        animation: bounce-slow 2s infinite ease-in-out;
-                        pointer-events: none;
-                        z-index: 999998;
-                        transition: opacity 1s ease;
-                    }
-                    .hud-bar {
-                        position: fixed;
-                        bottom: 16px;
-                        right: 24px;
-                        background: rgba(11, 15, 25, 0.45);
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                        border-radius: 10px;
-                        padding: 6px 14px;
-                        backdrop-filter: blur(8px);
-                        -webkit-backdrop-filter: blur(8px);
-                        z-index: 999999;
-                        pointer-events: none;
-                        font-family: 'JetBrains Mono', monospace;
-                        font-size: 0.65rem;
-                        color: rgba(241, 245, 249, 0.6);
-                        display: flex;
-                        gap: 14px;
-                        align-items: center;
-                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-                    }
-                    .hud-item {
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                    }
-                    .hud-dot {
-                        width: 5px;
-                        height: 5px;
-                        border-radius: 50%;
-                        background-color: #06b6d4;
-                        animation: pulse-dot 1.5s infinite;
-                    }
-                    .hud-val {
-                        color: #06b6d4;
-                        font-weight: 700;
-                    }
-                `;
-                document.head.appendChild(style);
-
-                // 3. Global Config & Theme Parameters
-                const config = {
-                    gravityWarp: 1.2,
-                    particleCount: 150,
-                    turbulence: 0.3,
-                    theme: 'nebula',
-                    colors: {
-                        nebula: ['#ec4899', '#8b5cf6', '#3b82f6', '#06b6d4'],
-                        cyber: ['#ff0055', '#00ffcc', '#ffff00', '#ff00ff'],
-                        aurora: ['#00ff87', '#60efff', '#0061ff', '#ffe985']
-                    }
-                };
-
-                const mouse = {
-                    x: -1000,
-                    y: -1000,
-                    targetX: -1000,
-                    targetY: -1000,
-                    isMoving: false
-                };
-
-                // 4. Blobs Container setup
-                const blobs = document.createElement('div');
-                blobs.id = 'quantum-blobs';
-                blobs.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; overflow:hidden; z-index:-10; filter:blur(140px); opacity:0.65; pointer-events:none; transition:transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);';
+                }
                 
-                const blobStyles = [
-                    { class: 'float-slow', css: 'top:-10%; left:10%; width:55vw; height:55vw;' },
-                    { class: 'float-medium', css: 'bottom:-15%; right:5%; width:60vw; height:60vw;' },
-                    { class: 'float-reverse', css: 'top:30%; right:20%; width:45vw; height:45vw;' },
-                    { class: 'float-fast', css: 'bottom:20%; left:-10%; width:50vw; height:50vw;' }
-                ];
+                html, body {
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                    font-family: 'Space Grotesk', sans-serif !important;
+                }
                 
-                function createBlobs() {
-                    blobs.innerHTML = '';
+                [data-testid="stHeader"], [data-testid="stAppViewContainer"] {
+                    background-color: transparent !important;
+                }
+                
+                @keyframes float-slow {
+                    0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+                    50% { transform: translate(60px, 80px) scale(1.15) rotate(180deg); }
+                    100% { transform: translate(-40px, -60px) scale(0.9) rotate(360deg); }
+                }
+                @keyframes float-medium {
+                    0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+                    50% { transform: translate(-80px, 60px) scale(0.9) rotate(-120deg); }
+                    100% { transform: translate(50px, -70px) scale(1.1) rotate(-240deg); }
+                }
+                @keyframes float-reverse {
+                    0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+                    50% { transform: translate(70px, -90px) scale(0.85) rotate(240deg); }
+                    100% { transform: translate(-60px, 80px) scale(1.1) rotate(480deg); }
+                }
+                @keyframes float-fast {
+                    0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+                    50% { transform: translate(-90px, -50px) scale(1.1) rotate(-180deg); }
+                    100% { transform: translate(40px, 90px) scale(0.95) rotate(-360deg); }
+                }
+                
+                body::after {
+                    content: "";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: linear-gradient(
+                        to bottom,
+                        rgba(6, 182, 212, 0) 0%,
+                        rgba(6, 182, 212, 0.03) 10%,
+                        rgba(6, 182, 212, 0) 20%
+                    );
+                    background-size: 100% 200%;
+                    animation: techScanline 12s linear infinite;
+                    pointer-events: none;
+                    z-index: -1;
+                }
+                
+                @keyframes techScanline {
+                    0% { background-position: 0% 0%; }
+                    100% { background-position: 0% 200%; }
+                }
+                
+                .main-title-container, .stat-card, details.finding-detail-box {
+                    animation: techSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                
+                [data-testid="stSidebar"] p, 
+                [data-testid="stSidebar"] span, 
+                [data-testid="stSidebar"] label, 
+                [data-testid="stSidebar"] div,
+                [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+                [data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
+                [data-testid="stSidebar"] [class*="stCaption"],
+                [data-testid="stSidebar"] [class*="stCaption"] *,
+                [data-testid="stSidebar"] caption {
+                    color: #cbd5e1 !important;
+                }
+                
+                [data-testid="stSidebar"] h2,
+                [data-testid="stSidebar"] h3,
+                [data-testid="stSidebar"] h4,
+                [data-testid="stSidebar"] h5,
+                [data-testid="stSidebar"] strong {
+                    color: #ffffff !important;
+                    font-weight: 700 !important;
+                }
+                
+                [data-testid="stSidebar"] div[data-testid="stCaptionContainer"] p,
+                [data-testid="stSidebar"] [class*="stCaption"] p {
+                    color: #94a3b8 !important;
+                    font-size: 0.85rem !important;
+                    font-weight: 500 !important;
+                }
+                
+                header[data-testid="stHeader"] button,
+                header[data-testid="stHeader"] a,
+                header[data-testid="stHeader"] svg,
+                header[data-testid="stHeader"] svg *,
+                header[data-testid="stHeader"] button *,
+                header[data-testid="stHeader"] a *,
+                header[data-testid="stHeader"] span,
+                header[data-testid="stHeader"] div {
+                    color: #cbd5e1 !important;
+                    fill: #cbd5e1 !important;
+                    stroke: #cbd5e1 !important;
+                    transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease !important;
+                }
+                header[data-testid="stHeader"] button:hover *,
+                header[data-testid="stHeader"] a:hover *,
+                header[data-testid="stHeader"] button:hover,
+                header[data-testid="stHeader"] a:hover {
+                    color: #ffffff !important;
+                    fill: #ffffff !important;
+                    stroke: #ffffff !important;
+                }
+                
+                code, pre, .finding-index, .finding-progress-bar, .finding-confidence-text, .finding-tag, .stat-card-change {
+                    font-family: 'JetBrains Mono', monospace !important;
+                }
+                
+                [data-testid="stSidebar"] {
+                    background-color: var(--surface) !important;
+                    border-right: 1px solid var(--border) !important;
+                }
+                [data-testid="stSidebar"] > div {
+                    background-color: var(--surface) !important;
+                }
+                
+                h1, h2, h3, h4, h5, h6, [data-testid="stWidgetLabel"] {
+                    font-family: 'Space Grotesk', sans-serif !important;
+                    color: var(--text) !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label > *:first-child {
+                    display: none !important;
+                    width: 0 !important;
+                    height: 0 !important;
+                    opacity: 0 !important;
+                    visibility: hidden !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] {
+                    gap: 0.5rem;
+                }
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label {
+                    background: transparent !important;
+                    border: 1px solid transparent !important;
+                    padding: 0.7rem 1rem !important;
+                    border-radius: 8px !important;
+                    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, border-color 0.25s ease !important;
+                    cursor: pointer !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    transform-origin: left center;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] *,
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
+                    color: #94a3b8 !important;
+                    font-weight: 500 !important;
+                    font-size: 1.05rem !important;
+                    transition: color 0.25s ease-in-out, transform 0.25s ease-in-out !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover {
+                    background: rgba(255, 255, 255, 0.03) !important;
+                    border-color: rgba(99, 179, 237, 0.1) !important;
+                    transform: scale(1.05) !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] *,
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] {
+                    color: #ffffff !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {
+                    background: rgba(59, 130, 246, 0.1) !important;
+                    border: 1px solid rgba(59, 130, 246, 0.25) !important;
+                    box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
+                }
+                
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] *,
+                [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] {
+                    color: var(--accent2) !important;
+                    font-weight: 700 !important;
+                }
+                
+                div[data-testid="stTextInput"] input,
+                div[data-testid="stTextArea"] textarea,
+                div[data-testid="stSelectbox"] select,
+                div[data-testid="stSelectbox"] div[data-baseweb="select"],
+                div[data-testid="stMultiSelect"] div[data-baseweb="select"],
+                div[data-baseweb="select"] > div {
+                    background-color: #0e1220 !important;
+                    color: var(--text) !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 8px !important;
+                    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+                }
+                
+                div[data-testid="stTextInput"] input:focus,
+                div[data-testid="stSelectbox"] div[data-baseweb="select"]:focus,
+                div[data-testid="stMultiSelect"] div[data-baseweb="select"]:focus {
+                    border-color: var(--accent2) !important;
+                    box-shadow: 0 0 12px rgba(6, 182, 212, 0.25) !important;
+                }
+                
+                div[data-testid="stTextInput"] input::placeholder {
+                    color: #64748b !important;
+                }
+                
+                div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+                    background-color: rgba(6, 182, 212, 0.12) !important;
+                    border: 1px solid rgba(6, 182, 212, 0.25) !important;
+                    color: var(--accent2) !important;
+                    border-radius: 4px !important;
+                }
+                div[data-testid="stMultiSelect"] span[data-baseweb="tag"] span {
+                    color: var(--accent2) !important;
+                }
+                div[data-testid="stMultiSelect"] span[data-baseweb="tag"] svg {
+                    fill: var(--accent2) !important;
+                }
+                div[data-testid="stMultiSelect"] input {
+                    background-color: transparent !important;
+                    color: var(--text) !important;
+                }
+                
+                div[data-baseweb="popover"] ul,
+                div[data-baseweb="menu"] {
+                    background-color: #0e1220 !important;
+                    border: 1px solid var(--border) !important;
+                }
+                div[data-baseweb="popover"] li,
+                div[data-baseweb="menu"] li {
+                    color: var(--text) !important;
+                    background-color: transparent !important;
+                    transition: background-color 0.2s ease !important;
+                }
+                div[data-baseweb="popover"] li:hover,
+                div[data-baseweb="menu"] li:hover {
+                    background-color: rgba(6, 182, 212, 0.1) !important;
+                    color: var(--accent2) !important;
+                }
+                
+                @keyframes fadeSlideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(12px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                @keyframes pulse {
+                    0% {
+                        box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+                    }
+                    70% {
+                        box-shadow: 0 0 0 8px rgba(6, 182, 212, 0);
+                    }
+                    100% {
+                        box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+                    }
+                }
+                
+                div[data-testid="stSidebar"] button[kind="primary"] {
+                    animation: pulse 2.5s infinite !important;
+                    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%) !important;
+                    color: white !important;
+                    border: none !important;
+                    font-family: 'Space Grotesk', sans-serif !important;
+                    font-weight: 600 !important;
+                    border-radius: 8px !important;
+                    padding: 0.75rem 1.2rem !important;
+                    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+                    transition: all 0.3s ease !important;
+                }
+                div[data-testid="stSidebar"] button[kind="primary"]:hover {
+                    box-shadow: 0 0 25px rgba(6, 182, 212, 0.5) !important;
+                    transform: translateY(-2px) !important;
+                }
+                
+                div[data-testid="stDownloadButton"] > button,
+                button[data-testid="stDownloadButton"] {
+                    background-color: transparent !important;
+                    border: 1px solid var(--border) !important;
+                    color: var(--accent2) !important;
+                    border-radius: 6px !important;
+                    transition: all 0.2s ease !important;
+                }
+                div[data-testid="stDownloadButton"] > button:hover,
+                button[data-testid="stDownloadButton"]:hover {
+                    background-color: rgba(6, 182, 212, 0.08) !important;
+                    border-color: var(--accent2) !important;
+                }
+                
+                .stat-card {
+                    background: var(--glass);
+                    border: 1px solid var(--border);
+                    border-radius: 12px;
+                    padding: 1.2rem;
+                    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .stat-card::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 50%;
+                    height: 100%;
+                    background: linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(6, 182, 212, 0.08) 50%,
+                        rgba(255, 255, 255, 0) 100%
+                    );
+                    transform: skewX(-25deg);
+                    transition: 0.75s;
+                }
+                .stat-card:hover::after {
+                    left: 120%;
+                }
+                .stat-card:hover {
+                    border-color: var(--accent) !important;
+                    transform: scale(1.04) !important;
+                    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2) !important;
+                    z-index: 2;
+                }
+                @keyframes neonBorderGlow {
+                    0% {
+                        border-color: rgba(6, 182, 212, 0.2);
+                        box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
+                    }
+                    50% {
+                        border-color: rgba(6, 182, 212, 0.6);
+                        box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+                    }
+                    100% {
+                        border-color: rgba(6, 182, 212, 0.2);
+                        box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
+                    }
+                }
+                .stat-glow {
+                    animation: neonBorderGlow 3s infinite ease-in-out !important;
+                }
+                .stat-card-title {
+                    color: var(--muted);
+                    font-family: 'JetBrains Mono', monospace;
+                    font-size: 0.75rem;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5rem;
+                }
+                .stat-card-value-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0.3rem;
+                }
+                .stat-card-value {
+                    color: var(--text);
+                    font-family: 'Space Grotesk', sans-serif;
+                    font-size: 1.9rem;
+                    font-weight: 700;
+                    transition: transform 0.2s ease, color 0.2s ease !important;
+                }
+                .stat-card:hover .stat-card-value {
+                    color: var(--accent2) !important;
+                    transform: scale(1.05) !important;
+                    display: inline-block;
+                }
+                .stat-card-emoji {
+                    font-size: 1.4rem;
+                }
+                .stat-card-change {
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                }
+                
+                details.finding-detail-box {
+                    background: var(--glass);
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    margin-bottom: 0.8rem;
+                    padding: 0.85rem 1.1rem;
+                    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
+                    position: relative;
+                    overflow: hidden;
+                }
+                details.finding-detail-box::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 30%;
+                    height: 100%;
+                    background: linear-gradient(
+                        to right,
+                        rgba(255, 255, 255, 0) 0%,
+                        rgba(59, 130, 246, 0.05) 50%,
+                        rgba(255, 255, 255, 0) 100%
+                    );
+                    transform: skewX(-25deg);
+                    transition: 0.6s;
+                }
+                details.finding-detail-box:hover::after {
+                    left: 120%;
+                }
+                details.finding-detail-box:hover {
+                    border-color: rgba(6, 182, 212, 0.4) !important;
+                    transform: scale(1.015) !important;
+                    box-shadow: 0 6px 24px rgba(6, 182, 212, 0.12) !important;
+                }
+                details.finding-detail-box[open] {
+                    border-color: var(--accent);
+                    background: rgba(11, 15, 25, 0.6);
+                }
+                summary.finding-summary {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    cursor: pointer;
+                    list-style: none;
+                    user-select: none;
+                }
+                summary.finding-summary::-webkit-details-marker {
+                    display: none;
+                }
+                .finding-summary-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    flex-grow: 1;
+                    overflow: hidden;
+                    margin-right: 20px;
+                }
+                .finding-index {
+                    color: var(--muted);
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                }
+                
+                @keyframes badgePulse {
+                    0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
+                    70% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+                }
+                
+                .finding-severity-badge {
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 0.72rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    min-width: 95px;
+                    justify-content: center;
+                }
+                .sev-critical {
+                    background: rgba(248, 113, 113, 0.12);
+                    color: var(--critical);
+                    border: 1px solid rgba(248, 113, 113, 0.25);
+                    animation: badgePulse 2s infinite !important;
+                }
+                .sev-major {
+                    background: rgba(251, 146, 60, 0.12);
+                    color: var(--major);
+                    border: 1px solid rgba(251, 146, 60, 0.25);
+                }
+                .sev-minor {
+                    background: rgba(250, 204, 21, 0.12);
+                    color: var(--minor);
+                    border: 1px solid rgba(250, 204, 21, 0.25);
+                }
+                .sev-info {
+                    background: rgba(74, 222, 128, 0.12);
+                    color: var(--success);
+                    border: 1px solid rgba(74, 222, 128, 0.25);
+                }
+                
+                .finding-title {
+                    color: var(--text);
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    transition: transform 0.25s ease, color 0.25s ease, padding-left 0.25s ease !important;
+                    position: relative;
+                }
+                .finding-title::before {
+                    content: ">";
+                    color: var(--accent2);
+                    opacity: 0;
+                    position: absolute;
+                    left: -15px;
+                    transition: opacity 0.25s ease, left 0.25s ease !important;
+                }
+                .finding-title:hover {
+                    color: var(--accent2) !important;
+                    padding-left: 15px !important;
+                }
+                .finding-title:hover::before {
+                    opacity: 1;
+                    left: 0;
+                }
+                
+                .finding-line {
+                    color: var(--muted);
+                    font-size: 0.8rem;
+                    margin-left: 5px;
+                    transition: color 0.2s ease !important;
+                }
+                .finding-line:hover {
+                    color: #ffffff !important;
+                }
+                .finding-summary-right {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+                .finding-progress-bar {
+                    color: var(--accent2);
+                    letter-spacing: -2px;
+                    font-size: 0.95rem;
+                    font-weight: bold;
+                }
+                .finding-confidence-text {
+                    color: var(--text);
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    min-width: 35px;
+                    text-align: right;
+                }
+                .finding-content {
+                    margin-top: 1rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid var(--border);
+                    animation: fadeSlideUp 0.3s ease-out forwards;
+                }
+                .finding-tags {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 0.8rem;
+                }
+                .finding-tag {
+                    background: rgba(59, 130, 246, 0.08);
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                    color: #93c5fd;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 0.75rem;
+                }
+                .finding-description {
+                    background: rgba(255, 255, 255, 0.015);
+                    border: 1px solid var(--border);
+                    border-radius: 6px;
+                    padding: 0.8rem;
+                    color: var(--text);
+                    font-size: 0.9rem;
+                    margin-bottom: 0.8rem;
+                    line-height: 1.5;
+                }
+                .finding-suggestion-box {
+                    background: rgba(6, 182, 212, 0.03);
+                    border-left: 3px solid var(--accent2);
+                    border-radius: 0 6px 6px 0;
+                    padding: 0.8rem;
+                    color: var(--text);
+                    font-size: 0.9rem;
+                    line-height: 1.5;
+                }
+                
+                .main-title-container {
+                    font-size: 2.2rem;
+                    font-weight: 700;
+                    font-family: 'Space Grotesk', sans-serif;
+                    letter-spacing: -0.5px;
+                    margin-bottom: 5px;
+                    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease !important;
+                    display: inline-block;
+                    transform-origin: left center;
+                }
+                .main-title-container:hover {
+                    transform: scale(1.03) !important;
+                    color: var(--accent2) !important;
+                }
+                
+                .sidebar-logo-container {
+                    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    display: inline-block;
+                    transform-origin: left center;
+                }
+                .sidebar-logo-container:hover {
+                    transform: scale(1.05) !important;
+                }
+                
+                ::-webkit-scrollbar {
+                    width: 5px !important;
+                    height: 5px !important;
+                }
+                ::-webkit-scrollbar-track {
+                    background: transparent !important;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background: rgba(59, 130, 246, 0.3) !important;
+                    border-radius: 3px !important;
+                }
+                ::-webkit-scrollbar-thumb:hover {
+                    background: var(--accent2) !important;
+                }
+            `;
+            parentDoc.head.appendChild(style);
+
+            // 3. Global Config & Theme Parameters
+            const config = {
+                gravityWarp: 1.2,
+                particleCount: 150,
+                turbulence: 0.3,
+                theme: 'nebula',
+                colors: {
+                    nebula: ['#ec4899', '#8b5cf6', '#3b82f6', '#06b6d4'],
+                    cyber: ['#ff0055', '#00ffcc', '#ffff00', '#ff00ff'],
+                    aurora: ['#00ff87', '#60efff', '#0061ff', '#ffe985']
+                }
+            };
+
+            const mouse = {
+                x: -1000,
+                y: -1000,
+                targetX: -1000,
+                targetY: -1000,
+                isMoving: false
+            };
+
+            // 4. Blobs Container setup
+            const blobs = parentDoc.createElement('div');
+            blobs.id = 'quantum-blobs';
+            blobs.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; overflow:hidden; z-index:-10; filter:blur(140px); opacity:0.65; pointer-events:none; transition:transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);';
+            
+            const blobStyles = [
+                { class: 'float-slow', css: 'top:-10%; left:10%; width:55vw; height:55vw;' },
+                { class: 'float-medium', css: 'bottom:-15%; right:5%; width:60vw; height:60vw;' },
+                { class: 'float-reverse', css: 'top:30%; right:20%; width:45vw; height:45vw;' },
+                { class: 'float-fast', css: 'bottom:20%; left:-10%; width:50vw; height:50vw;' }
+            ];
+            
+            function createBlobs() {
+                blobs.innerHTML = '';
+                const currentColors = config.colors[config.theme];
+                for(let i=0; i<4; i++) {
+                    const b = parentDoc.createElement('div');
+                    b.className = 'quantum-blob';
+                    const color = currentColors[i % currentColors.length];
+                    b.style.cssText = 'position:absolute; border-radius:50%; mix-blend-mode:screen; will-change:transform; ' + blobStyles[i].css + ' background:radial-gradient(circle, ' + color + '33 0%, ' + color + '05 70%, transparent 100%); animation:' + blobStyles[i].class + ' ' + (20 + i*4) + 's ease-in-out infinite alternate;';
+                    blobs.appendChild(b);
+                }
+            }
+            createBlobs();
+            parentDoc.body.appendChild(blobs);
+
+            // 5. Tech Grid setup
+            const grid = parentDoc.createElement('div');
+            grid.id = 'grid-overlay';
+            grid.className = 'grid-overlay';
+            parentDoc.body.appendChild(grid);
+
+            // 6. SVG Noise filter definition
+            if (!parentDoc.getElementById('quantum-noise-svg')) {
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svg = parentDoc.createElementNS(svgNS, 'svg');
+                svg.id = 'quantum-noise-svg';
+                svg.style.display = 'none';
+                const filter = parentDoc.createElementNS(svgNS, 'filter');
+                filter.setAttribute('id', 'quantum-noise');
+                const turb = parentDoc.createElementNS(svgNS, 'feTurbulence');
+                turb.setAttribute('type', 'fractalNoise');
+                turb.setAttribute('baseFrequency', '0.75');
+                turb.setAttribute('numOctaves', '3');
+                turb.setAttribute('stitchTiles', 'stitch');
+                const colorMatrix = parentDoc.createElementNS(svgNS, 'feColorMatrix');
+                colorMatrix.setAttribute('type', 'matrix');
+                colorMatrix.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0');
+                filter.appendChild(turb);
+                filter.appendChild(colorMatrix);
+                svg.appendChild(filter);
+                parentDoc.body.appendChild(svg);
+            }
+
+            // 7. Noise Overlay setup
+            const noise = parentDoc.createElement('div');
+            noise.id = 'noise-overlay';
+            noise.className = 'noise-overlay';
+            noise.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-6; pointer-events:none; opacity:0.04; filter:url(#quantum-noise);';
+            parentDoc.body.appendChild(noise);
+
+            // 8. Particle Canvas setup
+            const canvas = parentDoc.createElement('canvas');
+            canvas.id = 'particle-canvas';
+            canvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-9; pointer-events:none; mix-blend-mode:screen;';
+            parentDoc.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+
+            // 9. Ripple Canvas setup
+            const rippleCanvas = parentDoc.createElement('canvas');
+            rippleCanvas.id = 'ripple-canvas';
+            rippleCanvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-8; pointer-events:none; mix-blend-mode:screen;';
+            parentDoc.body.appendChild(rippleCanvas);
+            const rippleCtx = rippleCanvas.getContext('2d');
+
+            // 10. Floating settings controls
+            const toggle = parentDoc.createElement('div');
+            toggle.id = 'config-toggle';
+            toggle.className = 'config-toggle-btn';
+            toggle.title = 'Quantum Controller Settings';
+            toggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+            parentDoc.body.appendChild(toggle);
+
+            const panel = parentDoc.createElement('div');
+            panel.id = 'config-panel';
+            panel.className = 'config-panel';
+            panel.innerHTML = '                 <div class="config-title">Quantum Controller</div>                 <div class="control-group">                     <div class="control-label">                         <span>Gravity Warp</span>                         <span id="warp-val">' + config.gravityWarp.toFixed(1) + '</span>                     </div>                     <input type="range" id="slider-warp" class="control-slider" min="0" max="3" step="0.1" value="' + config.gravityWarp + '">                 </div>                 <div class="control-group">                     <div class="control-label">                         <span>Quantum Count</span>                         <span id="count-val">' + config.particleCount + '</span>                     </div>                     <input type="range" id="slider-count" class="control-slider" min="50" max="300" step="10" value="' + config.particleCount + '">                 </div>                 <div class="control-group">                     <div class="control-label">                         <span>Turbulence</span>                         <span id="turb-val">' + config.turbulence.toFixed(2) + '</span>                     </div>                     <input type="range" id="slider-turb" class="control-slider" min="0.05" max="0.8" step="0.05" value="' + config.turbulence + '">                 </div>                 <div class="control-group">                     <div class="control-label"><span>Theme</span></div>                     <div class="theme-selector">                         <button class="theme-btn active" data-theme="nebula">NEBULA</button>                         <button class="theme-btn" data-theme="cyber">CYBER</button>                         <button class="theme-btn" data-theme="aurora">AURORA</button>                     </div>                 </div>             ';
+            parentDoc.body.appendChild(panel);
+
+            toggle.addEventListener('click', (e) => {
+                panel.classList.toggle('visible');
+                e.stopPropagation();
+            });
+
+            parentDoc.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+                    panel.classList.remove('visible');
+                }
+            });
+
+            panel.querySelector('#slider-warp').addEventListener('input', (e) => {
+                config.gravityWarp = parseFloat(e.target.value);
+                panel.querySelector('#warp-val').innerText = config.gravityWarp.toFixed(1);
+            });
+
+            panel.querySelector('#slider-count').addEventListener('input', (e) => {
+                config.particleCount = parseInt(e.target.value);
+                panel.querySelector('#count-val').innerText = config.particleCount;
+                adjustParticleCount();
+            });
+
+            panel.querySelector('#slider-turb').addEventListener('input', (e) => {
+                config.turbulence = parseFloat(e.target.value);
+                panel.querySelector('#turb-val').innerText = config.turbulence.toFixed(2);
+            });
+
+            panel.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    panel.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    config.theme = e.target.dataset.theme;
+                    createBlobs();
                     const currentColors = config.colors[config.theme];
-                    for(let i=0; i<4; i++) {
-                        const b = document.createElement('div');
-                        b.className = 'quantum-blob';
-                        const color = currentColors[i % currentColors.length];
-                        b.style.cssText = 'position:absolute; border-radius:50%; mix-blend-mode:screen; will-change:transform; ' + blobStyles[i].css + ' background:radial-gradient(circle, ' + color + '33 0%, ' + color + '05 70%, transparent 100%); animation:' + blobStyles[i].class + ' ' + (20 + i*4) + 's ease-in-out infinite alternate;';
-                        blobs.appendChild(b);
-                    }
-                }
-                createBlobs();
-                document.body.appendChild(blobs);
-
-                // 5. Tech Grid setup
-                const grid = document.createElement('div');
-                grid.id = 'grid-overlay';
-                grid.className = 'grid-overlay';
-                document.body.appendChild(grid);
-
-                // 6. SVG Noise filter definition
-                if (!document.getElementById('quantum-noise-svg')) {
-                    const svgNS = 'http://www.w3.org/2000/svg';
-                    const svg = document.createElementNS(svgNS, 'svg');
-                    svg.id = 'quantum-noise-svg';
-                    svg.style.display = 'none';
-                    const filter = document.createElementNS(svgNS, 'filter');
-                    filter.setAttribute('id', 'quantum-noise');
-                    const turb = document.createElementNS(svgNS, 'feTurbulence');
-                    turb.setAttribute('type', 'fractalNoise');
-                    turb.setAttribute('baseFrequency', '0.75');
-                    turb.setAttribute('numOctaves', '3');
-                    turb.setAttribute('stitchTiles', 'stitch');
-                    const colorMatrix = document.createElementNS(svgNS, 'feColorMatrix');
-                    colorMatrix.setAttribute('type', 'matrix');
-                    colorMatrix.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0');
-                    filter.appendChild(turb);
-                    filter.appendChild(colorMatrix);
-                    svg.appendChild(filter);
-                    document.body.appendChild(svg);
-                }
-
-                // 7. Noise Overlay setup
-                const noise = document.createElement('div');
-                noise.id = 'noise-overlay';
-                noise.className = 'noise-overlay';
-                noise.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-6; pointer-events:none; opacity:0.04; filter:url(#quantum-noise);';
-                document.body.appendChild(noise);
-
-                // 8. Particle Canvas setup
-                const canvas = document.createElement('canvas');
-                canvas.id = 'particle-canvas';
-                canvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-9; pointer-events:none; mix-blend-mode:screen;';
-                document.body.appendChild(canvas);
-                const ctx = canvas.getContext('2d');
-
-                // 9. Ripple Canvas setup
-                const rippleCanvas = document.createElement('canvas');
-                rippleCanvas.id = 'ripple-canvas';
-                rippleCanvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-8; pointer-events:none; mix-blend-mode:screen;';
-                document.body.appendChild(rippleCanvas);
-                const rippleCtx = rippleCanvas.getContext('2d');
-
-                // 10. Floating settings controls
-                const toggle = document.createElement('div');
-                toggle.id = 'config-toggle';
-                toggle.className = 'config-toggle-btn';
-                toggle.title = 'Quantum Controller Settings';
-                toggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
-                document.body.appendChild(toggle);
-
-                const panel = document.createElement('div');
-                panel.id = 'config-panel';
-                panel.className = 'config-panel';
-                panel.innerHTML = ' \
-                    <div class="config-title">Quantum Controller</div> \
-                    <div class="control-group"> \
-                        <div class="control-label"> \
-                            <span>Gravity Warp</span> \
-                            <span id="warp-val">' + config.gravityWarp.toFixed(1) + '</span> \
-                        </div> \
-                        <input type="range" id="slider-warp" class="control-slider" min="0" max="3" step="0.1" value="' + config.gravityWarp + '"> \
-                    </div> \
-                    <div class="control-group"> \
-                        <div class="control-label"> \
-                            <span>Quantum Count</span> \
-                            <span id="count-val">' + config.particleCount + '</span> \
-                        </div> \
-                        <input type="range" id="slider-count" class="control-slider" min="50" max="300" step="10" value="' + config.particleCount + '"> \
-                    </div> \
-                    <div class="control-group"> \
-                        <div class="control-label"> \
-                            <span>Turbulence</span> \
-                            <span id="turb-val">' + config.turbulence.toFixed(2) + '</span> \
-                        </div> \
-                        <input type="range" id="slider-turb" class="control-slider" min="0.05" max="0.8" step="0.05" value="' + config.turbulence + '"> \
-                    </div> \
-                    <div class="control-group"> \
-                        <div class="control-label"><span>Theme</span></div> \
-                        <div class="theme-selector"> \
-                            <button class="theme-btn active" data-theme="nebula">NEBULA</button> \
-                            <button class="theme-btn" data-theme="cyber">CYBER</button> \
-                            <button class="theme-btn" data-theme="aurora">AURORA</button> \
-                        </div> \
-                    </div> \
-                ';
-                document.body.appendChild(panel);
-
-                toggle.addEventListener('click', (e) => {
-                    panel.classList.toggle('visible');
-                    e.stopPropagation();
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!panel.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
-                        panel.classList.remove('visible');
-                    }
-                });
-
-                panel.querySelector('#slider-warp').addEventListener('input', (e) => {
-                    config.gravityWarp = parseFloat(e.target.value);
-                    panel.querySelector('#warp-val').innerText = config.gravityWarp.toFixed(1);
-                });
-
-                panel.querySelector('#slider-count').addEventListener('input', (e) => {
-                    config.particleCount = parseInt(e.target.value);
-                    panel.querySelector('#count-val').innerText = config.particleCount;
-                    adjustParticleCount();
-                });
-
-                panel.querySelector('#slider-turb').addEventListener('input', (e) => {
-                    config.turbulence = parseFloat(e.target.value);
-                    panel.querySelector('#turb-val').innerText = config.turbulence.toFixed(2);
-                });
-
-                panel.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        panel.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
-                        config.theme = e.target.dataset.theme;
-                        createBlobs();
-                        // Instantly transition particle colors
-                        const currentColors = config.colors[config.theme];
-                        particles.forEach(p => {
-                            p.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
-                        });
+                    particles.forEach(p => {
+                        p.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
                     });
                 });
+            });
 
-                // 11. HUD Telemetry overlay
-                const hud = document.createElement('div');
-                hud.id = 'hud-overlay';
-                hud.className = 'hud-bar';
-                hud.innerHTML = ' \
-                    <div class="hud-item"> \
-                        <div class="hud-dot"></div> \
-                        <span>TELEMETRY: <span class="hud-val" id="hud-stabilizer">99.84%</span></span> \
-                    </div> \
-                    <div class="hud-item"> \
-                        <span>POWER: <span class="hud-val" id="hud-energy">0.041 kW</span></span> \
-                    </div> \
-                    <div class="hud-item"> \
-                        <span>ENTROPY: <span class="hud-val" id="hud-entropy">0.725 J/K</span></span> \
-                    </div> \
-                    <div class="hud-item"> \
-                        <span>FPS: <span class="hud-val" id="hud-fps">60 FPS</span></span> \
-                    </div> \
-                ';
-                document.body.appendChild(hud);
+            // 11. HUD Telemetry overlay
+            const hud = parentDoc.createElement('div');
+            hud.id = 'hud-overlay';
+            hud.className = 'hud-bar';
+            hud.innerHTML = '                 <div class="hud-item">                     <div class="hud-dot"></div>                     <span>TELEMETRY: <span class="hud-val" id="hud-stabilizer">99.84%</span></span>                 </div>                 <div class="hud-item">                     <span>POWER: <span class="hud-val" id="hud-energy">0.041 kW</span></span>                 </div>                 <div class="hud-item">                     <span>ENTROPY: <span class="hud-val" id="hud-entropy">0.725 J/K</span></span>                 </div>                 <div class="hud-item">                     <span>FPS: <span class="hud-val" id="hud-fps">60 FPS</span></span>                 </div>             ';
+            parentDoc.body.appendChild(hud);
 
-                // 12. Mouse click/hover hint
-                const hint = document.createElement('div');
-                hint.id = 'mouse-hint';
-                hint.className = 'mouse-hint';
-                hint.innerHTML = '<span>DISTORT FIELD [HOVER] • CREATE RIPPLES [CLICK]</span>';
-                document.body.appendChild(hint);
-                setTimeout(() => {
-                    if (hint) {
-                        hint.style.opacity = '0';
-                        setTimeout(() => { if (hint) hint.remove(); }, 1000);
+            // 12. Mouse click/hover hint
+            const hint = parentDoc.createElement('div');
+            hint.id = 'mouse-hint';
+            hint.className = 'mouse-hint';
+            hint.innerHTML = '<span>DISTORT FIELD [HOVER] • CREATE RIPPLES [CLICK]</span>';
+            parentDoc.body.appendChild(hint);
+            setTimeout(() => {
+                if (hint) {
+                    hint.style.opacity = '0';
+                    setTimeout(() => { if (hint) hint.remove(); }, 1000);
+                }
+            }, 5000);
+
+            // 13. Canvas resize logic
+            function resize() {
+                canvas.width = parentWindow.innerWidth;
+                canvas.height = parentWindow.innerHeight;
+                rippleCanvas.width = parentWindow.innerWidth;
+                rippleCanvas.height = parentWindow.innerHeight;
+                initFlowField();
+            }
+
+            // 14. Event listeners & Parallax translations
+            function handleMouseMove(e) {
+                mouse.targetX = e.clientX;
+                mouse.targetY = e.clientY;
+                mouse.isMoving = true;
+
+                const shiftX = (e.clientX - parentWindow.innerWidth / 2) * -0.015;
+                const shiftY = (e.clientY - parentWindow.innerHeight / 2) * -0.015;
+                blobs.style.transform = 'translate(' + shiftX + 'px, ' + shiftY + 'px)';
+            }
+
+            function handleMouseOut() {
+                mouse.targetX = -1000;
+                mouse.targetY = -1000;
+                mouse.isMoving = false;
+            }
+
+            function handleClick(e) {
+                if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || e.target.closest('[data-testid=stSidebar]') || e.target.closest('#config-panel') || e.target.closest('#config-toggle')) {
+                    return;
+                }
+                ripples.push(new Ripple(e.clientX, e.clientY));
+            }
+
+            if (parentWindow.quantumBgListeners) {
+                parentWindow.removeEventListener('resize', parentWindow.quantumBgListeners.resize);
+                parentWindow.removeEventListener('mousemove', parentWindow.quantumBgListeners.mousemove);
+                parentWindow.removeEventListener('mouseout', parentWindow.quantumBgListeners.mouseout);
+                parentWindow.removeEventListener('click', parentWindow.quantumBgListeners.click);
+            }
+
+            parentWindow.quantumBgListeners = {
+                resize: resize,
+                mousemove: handleMouseMove,
+                mouseout: handleMouseOut,
+                click: handleClick
+            };
+
+            parentWindow.addEventListener('resize', resize);
+            parentWindow.addEventListener('mousemove', handleMouseMove);
+            parentWindow.addEventListener('mouseout', handleMouseOut);
+            parentWindow.addEventListener('click', handleClick);
+
+            resize();
+
+            // 15. Flow Field Setup
+            let flowField = [];
+            let cols, rows;
+            const fieldResolution = 45;
+
+            function initFlowField() {
+                cols = Math.ceil(canvas.width / fieldResolution) + 1;
+                rows = Math.ceil(canvas.height / fieldResolution) + 1;
+                flowField = new Array(cols * rows);
+                
+                for (let x = 0; x < cols; x++) {
+                    for (let y = 0; y < rows; y++) {
+                        const idx = x + y * cols;
+                        flowField[idx] = {
+                            x: Math.cos(x * 0.15) * 0.2,
+                            y: Math.sin(y * 0.15) * 0.2,
+                            strength: 0.8
+                        };
                     }
-                }, 5000);
+                }
+            }
 
-                // 13. Canvas resize logic
-                function resize() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                    rippleCanvas.width = window.innerWidth;
-                    rippleCanvas.height = window.innerHeight;
-                    initFlowField();
+            // 16. Bioluminescent physics particles
+            class Particle {
+                constructor() {
+                    this.reset(true);
                 }
 
-                // 14. Event listeners & Parallax translations
-                function handleMouseMove(e) {
-                    mouse.targetX = e.clientX;
-                    mouse.targetY = e.clientY;
-                    mouse.isMoving = true;
-
-                    const shiftX = (e.clientX - window.innerWidth / 2) * -0.015;
-                    const shiftY = (e.clientY - window.innerHeight / 2) * -0.015;
-                    blobs.style.transform = 'translate(' + shiftX + 'px, ' + shiftY + 'px)';
-                }
-
-                function handleMouseOut() {
-                    mouse.targetX = -1000;
-                    mouse.targetY = -1000;
-                    mouse.isMoving = false;
-                }
-
-                function handleClick(e) {
-                    // Ignore interactive UI components to prevent blocking input fields
-                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || e.target.closest('[data-testid=stSidebar]') || e.target.closest('#config-panel') || e.target.closest('#config-toggle')) {
-                        return;
-                    }
-                    ripples.push(new Ripple(e.clientX, e.clientY));
-                }
-
-                // Clean up any old listeners in case of hot-reload / rerun
-                if (window.quantumBgListeners) {
-                    window.removeEventListener('resize', window.quantumBgListeners.resize);
-                    window.removeEventListener('mousemove', window.quantumBgListeners.mousemove);
-                    window.removeEventListener('mouseout', window.quantumBgListeners.mouseout);
-                    window.removeEventListener('click', window.quantumBgListeners.click);
-                }
-
-                window.quantumBgListeners = {
-                    resize: resize,
-                    mousemove: handleMouseMove,
-                    mouseout: handleMouseOut,
-                    click: handleClick
-                };
-
-                window.addEventListener('resize', resize);
-                window.addEventListener('mousemove', handleMouseMove);
-                window.addEventListener('mouseout', handleMouseOut);
-                window.addEventListener('click', handleClick);
-
-                resize();
-
-                // 15. Flow Field Setup
-                let flowField = [];
-                let cols, rows;
-                const fieldResolution = 45;
-
-                function initFlowField() {
-                    cols = Math.ceil(canvas.width / fieldResolution) + 1;
-                    rows = Math.ceil(canvas.height / fieldResolution) + 1;
-                    flowField = new Array(cols * rows);
+                reset(initial = false) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = initial ? Math.random() * canvas.height : (Math.random() > 0.5 ? 0 : canvas.height);
+                    this.size = Math.random() * 2 + 1.2;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.speedLimit = Math.random() * 1.5 + 2.0;
+                    this.alpha = Math.random() * 0.5 + 0.3;
                     
-                    for (let x = 0; x < cols; x++) {
-                        for (let y = 0; y < rows; y++) {
-                            const idx = x + y * cols;
-                            flowField[idx] = {
-                                x: Math.cos(x * 0.15) * 0.2,
-                                y: Math.sin(y * 0.15) * 0.2,
-                                strength: 0.8
-                            };
-                        }
-                    }
+                    const currentColors = config.colors[config.theme];
+                    this.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
                 }
 
-                // 16. Bioluminescent physics particles
-                class Particle {
-                    constructor() {
-                        this.reset(true);
-                    }
+                update() {
+                    const fieldX = Math.floor(this.x / fieldResolution);
+                    const fieldY = Math.floor(this.y / fieldResolution);
 
-                    reset(initial = false) {
-                        this.x = Math.random() * canvas.width;
-                        this.y = initial ? Math.random() * canvas.height : (Math.random() > 0.5 ? 0 : canvas.height);
-                        this.size = Math.random() * 2 + 1.2;
-                        this.vx = (Math.random() - 0.5) * 0.5;
-                        this.vy = (Math.random() - 0.5) * 0.5;
-                        this.speedLimit = Math.random() * 1.5 + 2.0;
-                        this.alpha = Math.random() * 0.5 + 0.3;
-                        
-                        const currentColors = config.colors[config.theme];
-                        this.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
-                    }
-
-                    update() {
-                        const fieldX = Math.floor(this.x / fieldResolution);
-                        const fieldY = Math.floor(this.y / fieldResolution);
-
-                        if (fieldX >= 0 && fieldX < cols && fieldY >= 0 && fieldY < rows) {
-                            const vec = flowField[fieldX + fieldY * cols];
-                            if (vec) {
-                                this.vx += vec.x * vec.strength * config.turbulence;
-                                this.vy += vec.y * vec.strength * config.turbulence;
-                            }
+                    if (fieldX >= 0 && fieldX < cols && fieldY >= 0 && fieldY < rows) {
+                        const vec = flowField[fieldX + fieldY * cols];
+                        if (vec) {
+                            this.vx += vec.x * vec.strength * config.turbulence;
+                            this.vy += vec.y * vec.strength * config.turbulence;
                         }
-
-                        if (mouse.x > 0) {
-                            const dx = mouse.x - this.x;
-                            const dy = mouse.y - this.y;
-                            const distSq = dx * dx + dy * dy;
-                            const maxDist = 250;
-                            
-                            if (distSq < maxDist * maxDist) {
-                                const dist = Math.sqrt(distSq);
-                                const force = (maxDist - dist) / maxDist;
-                                
-                                if (dist > 80) {
-                                    const angle = Math.atan2(dy, dx);
-                                    const pullStrength = force * config.gravityWarp * 0.15;
-                                    this.vx += Math.cos(angle + Math.PI/2.5) * pullStrength;
-                                    this.vy += Math.sin(angle + Math.PI/2.5) * pullStrength;
-                                } else {
-                                    const angle = Math.atan2(dy, dx);
-                                    const pushStrength = (80 - dist) / 80 * 0.4;
-                                    this.vx -= Math.cos(angle) * pushStrength;
-                                    this.vy -= Math.sin(angle) * pushStrength;
-                                }
-                            }
-                        }
-
-                        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-                        if (speed > this.speedLimit) {
-                            this.vx = (this.vx / speed) * this.speedLimit;
-                            this.vy = (this.vy / speed) * this.speedLimit;
-                        }
-
-                        this.x += this.vx;
-                        this.y += this.vy;
-
-                        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                            this.reset(false);
-                        }
-                    }
-
-                    draw() {
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                        ctx.fillStyle = this.baseColor;
-                        ctx.globalAlpha = this.alpha;
-                        ctx.fill();
-
-                        if (this.size > 2.2) {
-                            ctx.beginPath();
-                            ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
-                            ctx.fillStyle = this.baseColor;
-                            ctx.globalAlpha = this.alpha * 0.18;
-                            ctx.fill();
-                        }
-                    }
-                }
-
-                const particles = [];
-                function adjustParticleCount() {
-                    if (particles.length < config.particleCount) {
-                        while (particles.length < config.particleCount) {
-                            particles.push(new Particle());
-                        }
-                    } else if (particles.length > config.particleCount) {
-                        particles.splice(config.particleCount);
-                    }
-                }
-                adjustParticleCount();
-
-                // 17. Ripple effect system
-                const ripples = [];
-                class Ripple {
-                    constructor(x, y) {
-                        this.x = x;
-                        this.y = y;
-                        this.radius = 0;
-                        this.maxRadius = Math.max(window.innerWidth, window.innerHeight) * 0.65;
-                        this.speed = 12;
-                        this.lineWidth = 15;
-                        this.alpha = 0.85;
-                        this.color = config.colors[config.theme][Math.floor(Math.random() * config.colors[config.theme].length)];
-                    }
-
-                    update() {
-                        this.radius += this.speed;
-                        this.alpha = 1 - (this.radius / this.maxRadius);
-                        
-                        particles.forEach(p => {
-                            const dx = p.x - this.x;
-                            const dy = p.y - this.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            const diff = Math.abs(dist - this.radius);
-
-                            if (diff < 40) {
-                                const pushForce = (1 - diff / 40) * 12;
-                                const angle = Math.atan2(dy, dx);
-                                p.vx += Math.cos(angle) * pushForce * 0.6;
-                                p.vy += Math.sin(angle) * pushForce * 0.6;
-                            }
-                        });
-
-                        return this.radius < this.maxRadius;
-                    }
-
-                    draw() {
-                        rippleCtx.strokeStyle = this.color;
-                        rippleCtx.lineWidth = this.lineWidth * (1 - this.radius / this.maxRadius);
-                        rippleCtx.globalAlpha = this.alpha * 0.15;
-                        
-                        rippleCtx.beginPath();
-                        rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                        rippleCtx.stroke();
-
-                        rippleCtx.fillStyle = this.color;
-                        rippleCtx.globalAlpha = this.alpha * 0.02;
-                        rippleCtx.beginPath();
-                        rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                        rippleCtx.fill();
-                    }
-                }
-
-                // 18. HUD Real-time metrics
-                let lastTime = performance.now();
-                let frameCount = 0;
-                const fpsEl = document.getElementById('hud-fps');
-                const energyEl = document.getElementById('hud-energy');
-                const stabilizerEl = document.getElementById('hud-stabilizer');
-                const entropyEl = document.getElementById('hud-entropy');
-
-                function updateHUD() {
-                    const now = performance.now();
-                    frameCount++;
-                    
-                    if (now - lastTime >= 1000) {
-                        const fps = Math.round((frameCount * 1000) / (now - lastTime));
-                        if (fpsEl) fpsEl.innerText = fps + ' FPS';
-                        frameCount = 0;
-                        lastTime = now;
-
-                        const energy = (0.035 + Math.random() * 0.015).toFixed(3);
-                        if (energyEl) energyEl.innerText = energy + ' kW';
-
-                        const stability = (99.8 + Math.random() * 0.15).toFixed(2);
-                        if (stabilizerEl) stabilizerEl.innerText = stability + '%';
-
-                        const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
-                        if (entropyEl) entropyEl.innerText = entropy + ' J/K';
-                    }
-                }
-
-                // 19. Parallax Card 3D tilt interaction delegated automatically
-                let activeTiltCard = null;
-                let activeTiltRect = null;
-
-                document.addEventListener('mouseover', (e) => {
-                    const card = e.target.closest('.stat-card');
-                    if (card) {
-                        activeTiltCard = card;
-                        activeTiltRect = card.getBoundingClientRect();
-                        card.style.transformStyle = 'preserve-3d';
-                        card.style.perspective = '1000px';
-                    }
-                });
-
-                document.addEventListener('mouseout', (e) => {
-                    const card = e.target.closest('.stat-card');
-                    if (card && card === activeTiltCard) {
-                        card.style.transform = '';
-                        activeTiltCard = null;
-                        activeTiltRect = null;
-                    }
-                });
-
-                document.addEventListener('mousemove', (e) => {
-                    if (activeTiltCard && activeTiltRect) {
-                        const rect = activeTiltRect;
-                        const cardCenterX = rect.left + rect.width / 2;
-                        const cardCenterY = rect.top + rect.height / 2;
-                        
-                        const rotateX = -(e.clientY - cardCenterY) / (rect.height / 2) * 8;
-                        const rotateY = (e.clientX - cardCenterX) / (rect.width / 2) * 10;
-                        
-                        activeTiltCard.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.04)';
-                    }
-                });
-
-                // 20. Primary loop tick
-                function loop() {
-                    ctx.fillStyle = '#05070f';
-                    ctx.globalAlpha = 0.28;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.globalAlpha = 1;
-
-                    rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
-
-                    if (mouse.isMoving) {
-                        mouse.x += (mouse.targetX - mouse.x) * 0.1;
-                        mouse.y += (mouse.targetY - mouse.y) * 0.1;
-                    } else {
-                        mouse.x = -1000;
-                        mouse.y = -1000;
                     }
 
                     if (mouse.x > 0) {
-                        for (let x = 0; x < cols; x++) {
-                            for (let y = 0; y < rows; y++) {
-                                const idx = x + y * cols;
-                                const cellX = x * fieldResolution;
-                                const cellY = y * fieldResolution;
-                                
-                                const dx = mouse.x - cellX;
-                                const dy = mouse.y - cellY;
-                                const dist = Math.sqrt(dx * dx + dy * dy);
-                                
-                                if (dist < 320) {
-                                    const angle = Math.atan2(dy, dx) + Math.PI/2;
-                                    const force = (320 - dist) / 320;
-                                    
-                                    flowField[idx].x = Math.cos(angle) * force * 1.5;
-                                    flowField[idx].y = Math.sin(angle) * force * 1.5;
-                                    flowField[idx].strength = 1.6;
-                                } else {
-                                    flowField[idx].x += (Math.cos(x * 0.15) * 0.2 - flowField[idx].x) * 0.05;
-                                    flowField[idx].y += (Math.sin(y * 0.15) * 0.2 - flowField[idx].y) * 0.05;
-                                    flowField[idx].strength += (0.8 - flowField[idx].strength) * 0.05;
-                                }
+                        const dx = mouse.x - this.x;
+                        const dy = mouse.y - this.y;
+                        const distSq = dx * dx + dy * dy;
+                        const maxDist = 250;
+                        
+                        if (distSq < maxDist * maxDist) {
+                            const dist = Math.sqrt(distSq);
+                            const force = (maxDist - dist) / maxDist;
+                            
+                            if (dist > 80) {
+                                const angle = Math.atan2(dy, dx);
+                                const pullStrength = force * config.gravityWarp * 0.15;
+                                this.vx += Math.cos(angle + Math.PI/2.5) * pullStrength;
+                                this.vy += Math.sin(angle + Math.PI/2.5) * pullStrength;
+                            } else {
+                                const angle = Math.atan2(dy, dx);
+                                const pushStrength = (80 - dist) / 80 * 0.4;
+                                this.vx -= Math.cos(angle) * pushStrength;
+                                this.vy -= Math.sin(angle) * pushStrength;
                             }
                         }
                     }
 
-                    particles.forEach(p => { p.update(); p.draw(); });
+                    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    if (speed > this.speedLimit) {
+                        this.vx = (this.vx / speed) * this.speedLimit;
+                        this.vy = (this.vy / speed) * this.speedLimit;
+                    }
+
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                        this.reset(false);
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.baseColor;
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fill();
+
+                    if (this.size > 2.2) {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
+                        ctx.fillStyle = this.baseColor;
+                        ctx.globalAlpha = this.alpha * 0.18;
+                        ctx.fill();
+                    }
+                }
+            }
+
+            const particles = [];
+            function adjustParticleCount() {
+                if (particles.length < config.particleCount) {
+                    while (particles.length < config.particleCount) {
+                        particles.push(new Particle());
+                    }
+                } else if (particles.length > config.particleCount) {
+                    particles.splice(config.particleCount);
+                }
+            }
+            adjustParticleCount();
+
+            // 17. Ripple effect system
+            const ripples = [];
+            class Ripple {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = 0;
+                    this.maxRadius = Math.max(parentWindow.innerWidth, parentWindow.innerHeight) * 0.65;
+                    this.speed = 12;
+                    this.lineWidth = 15;
+                    this.alpha = 0.85;
+                    this.color = config.colors[config.theme][Math.floor(Math.random() * config.colors[config.theme].length)];
+                }
+
+                update() {
+                    this.radius += this.speed;
+                    this.alpha = 1 - (this.radius / this.maxRadius);
                     
-                    for (let i = ripples.length - 1; i >= 0; i--) {
-                        if (ripples[i].update()) {
-                            ripples[i].draw();
-                        } else {
-                            ripples.splice(i, 1);
+                    particles.forEach(p => {
+                        const dx = p.x - this.x;
+                        const dy = p.y - this.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const diff = Math.abs(dist - this.radius);
+
+                        if (diff < 40) {
+                            const pushForce = (1 - diff / 40) * 12;
+                            const angle = Math.atan2(dy, dx);
+                            p.vx += Math.cos(angle) * pushForce * 0.6;
+                            p.vy += Math.sin(angle) * pushForce * 0.6;
+                        }
+                    });
+
+                    return this.radius < this.maxRadius;
+                }
+
+                draw() {
+                    rippleCtx.strokeStyle = this.color;
+                    rippleCtx.lineWidth = this.lineWidth * (1 - this.radius / this.maxRadius);
+                    rippleCtx.globalAlpha = this.alpha * 0.15;
+                    
+                    rippleCtx.beginPath();
+                    rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    rippleCtx.stroke();
+
+                    rippleCtx.fillStyle = this.color;
+                    rippleCtx.globalAlpha = this.alpha * 0.02;
+                    rippleCtx.beginPath();
+                    rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    rippleCtx.fill();
+                }
+            }
+
+            // 18. HUD Real-time metrics
+            let lastTime = parentWindow.performance.now();
+            let frameCount = 0;
+            const fpsEl = parentDoc.getElementById('hud-fps');
+            const energyEl = parentDoc.getElementById('hud-energy');
+            const stabilizerEl = parentDoc.getElementById('hud-stabilizer');
+            const entropyEl = parentDoc.getElementById('hud-entropy');
+
+            function updateHUD() {
+                const now = parentWindow.performance.now();
+                frameCount++;
+                
+                if (now - lastTime >= 1000) {
+                    const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                    if (fpsEl) fpsEl.innerText = fps + ' FPS';
+                    frameCount = 0;
+                    lastTime = now;
+
+                    const energy = (0.035 + Math.random() * 0.015).toFixed(3);
+                    if (energyEl) energyEl.innerText = energy + ' kW';
+
+                    const stability = (99.8 + Math.random() * 0.15).toFixed(2);
+                    if (stabilizerEl) stabilizerEl.innerText = stability + '%';
+
+                    const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
+                    if (entropyEl) entropyEl.innerText = entropy + ' J/K';
+                }
+            }
+
+            // 19. Parallax Card 3D tilt interaction delegated automatically
+            let activeTiltCard = null;
+            let activeTiltRect = null;
+
+            parentDoc.addEventListener('mouseover', (e) => {
+                const card = e.target.closest('.stat-card');
+                if (card) {
+                    activeTiltCard = card;
+                    activeTiltRect = card.getBoundingClientRect();
+                    card.style.transformStyle = 'preserve-3d';
+                    card.style.perspective = '1000px';
+                }
+            });
+
+            parentDoc.addEventListener('mouseout', (e) => {
+                const card = e.target.closest('.stat-card');
+                if (card && card === activeTiltCard) {
+                    card.style.transform = '';
+                    activeTiltCard = null;
+                    activeTiltRect = null;
+                }
+            });
+
+            parentDoc.addEventListener('mousemove', (e) => {
+                if (activeTiltCard && activeTiltRect) {
+                    const rect = activeTiltRect;
+                    const cardCenterX = rect.left + rect.width / 2;
+                    const cardCenterY = rect.top + rect.height / 2;
+                    
+                    const rotateX = -(e.clientY - cardCenterY) / (rect.height / 2) * 8;
+                    const rotateY = (e.clientX - cardCenterX) / (rect.width / 2) * 10;
+                    
+                    activeTiltCard.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.04)';
+                }
+            });
+
+            // 20. Primary loop tick
+            function loop() {
+                ctx.fillStyle = '#05070f';
+                ctx.globalAlpha = 0.28;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1;
+
+                rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+
+                if (mouse.isMoving) {
+                    mouse.x += (mouse.targetX - mouse.x) * 0.1;
+                    mouse.y += (mouse.targetY - mouse.y) * 0.1;
+                } else {
+                    mouse.x = -1000;
+                    mouse.y = -1000;
+                }
+
+                if (mouse.x > 0) {
+                    for (let x = 0; x < cols; x++) {
+                        for (let y = 0; y < rows; y++) {
+                            const idx = x + y * cols;
+                            const cellX = x * fieldResolution;
+                            const cellY = y * fieldResolution;
+                            
+                            const dx = mouse.x - cellX;
+                            const dy = mouse.y - cellY;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (dist < 320) {
+                                const angle = Math.atan2(dy, dx) + Math.PI/2;
+                                const force = (320 - dist) / 320;
+                                
+                                flowField[idx].x = Math.cos(angle) * force * 1.5;
+                                flowField[idx].y = Math.sin(angle) * force * 1.5;
+                                flowField[idx].strength = 1.6;
+                            } else {
+                                flowField[idx].x += (Math.cos(x * 0.15) * 0.2 - flowField[idx].x) * 0.05;
+                                flowField[idx].y += (Math.sin(y * 0.15) * 0.2 - flowField[idx].y) * 0.05;
+                                flowField[idx].strength += (0.8 - flowField[idx].strength) * 0.05;
+                            }
                         }
                     }
-
-                    updateHUD();
-
-                    if (window.quantumBgAnimationFrame) {
-                        cancelAnimationFrame(window.quantumBgAnimationFrame);
-                    }
-                    window.quantumBgAnimationFrame = requestAnimationFrame(loop);
                 }
+
+                particles.forEach(p => { p.update(); p.draw(); });
                 
-                if (window.quantumBgAnimationFrame) {
-                    cancelAnimationFrame(window.quantumBgAnimationFrame);
+                for (let i = ripples.length - 1; i >= 0; i--) {
+                    if (ripples[i].update()) {
+                        ripples[i].draw();
+                    } else {
+                        ripples.splice(i, 1);
+                    }
                 }
-                loop();
-            })();
-        }
-    " style="display:none;">
-    """),
-    unsafe_allow_html=True
+
+                updateHUD();
+
+                if (parentWindow.quantumBgAnimationFrame) {
+                    parentWindow.cancelAnimationFrame(parentWindow.quantumBgAnimationFrame);
+                }
+                parentWindow.quantumBgAnimationFrame = parentWindow.requestAnimationFrame(loop);
+            }
+            
+            if (parentWindow.quantumBgAnimationFrame) {
+                parentWindow.cancelAnimationFrame(parentWindow.quantumBgAnimationFrame);
+            }
+            loop();
+        })();
+    </script>
+    """,
+    height=0,
+    width=0
 )
 
 # Helper function for confidence rating conversions
