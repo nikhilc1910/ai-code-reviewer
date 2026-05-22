@@ -204,7 +204,7 @@ st.markdown(
         background-size: 40px 40px;
         background-position: center;
         pointer-events: none;
-        z-index: 0;
+        z-index: -2; /* Send to back so it doesn't overlap text */
     }
     
     [data-testid="stAppViewContainer"]::after {
@@ -223,7 +223,7 @@ st.markdown(
         background-size: 100% 200%;
         animation: techScanline 12s linear infinite;
         pointer-events: none;
-        z-index: 1;
+        z-index: -1; /* Send to back so it doesn't overlap text */
     }
     
     @keyframes techScanline {
@@ -231,8 +231,9 @@ st.markdown(
         100% { background-position: 0% 200%; }
     }
     
-    [data-testid="stAppViewContainer"] {
-        animation: techSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* Apply tech slide-in animations selectively to content containers instead of the root view */
+    .main-title-container, .stat-card, details.finding-detail-box {
+        animation: techSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     
     /* Global visibility overrides for captions, titles, sidebar items, and controls to eliminate dark-on-dark text */
