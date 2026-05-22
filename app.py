@@ -195,6 +195,11 @@ st.markdown(
         color: var(--text) !important;
     }
     
+    /* Hide the radio button circle indicators in the sidebar navigation */
+    div[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+        display: none !important;
+    }
+    
     /* Sidebar radio button styling transformed into custom navigation tabs */
     div[data-testid="stSidebar"] div[role="radiogroup"] {
         gap: 0.5rem;
@@ -204,27 +209,87 @@ st.markdown(
         border: 1px solid transparent !important;
         padding: 0.7rem 1rem !important;
         border-radius: 8px !important;
-        color: var(--muted) !important;
-        transition: all 0.2s ease-in-out !important;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, border-color 0.25s ease !important;
         cursor: pointer !important;
         display: flex !important;
+        transform-origin: left center;
+    }
+    
+    /* Fix text contrast & hover-zoom in left column navigation tabs */
+    div[data-testid="stSidebar"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
+        color: #94a3b8 !important; /* light grey unselected */
         font-weight: 500 !important;
+        transition: color 0.2s ease-in-out, transform 0.2s ease-in-out !important;
     }
     div[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-        background: rgba(255, 255, 255, 0.02) !important;
-        color: var(--text) !important;
-        border-color: rgba(99, 179, 237, 0.05) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-color: rgba(99, 179, 237, 0.1) !important;
+        transform: scale(1.04) !important;
+    }
+    div[data-testid="stSidebar"] div[role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] p {
+        color: #ffffff !important; /* white on hover */
     }
     div[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
         background: rgba(59, 130, 246, 0.1) !important;
         border: 1px solid rgba(59, 130, 246, 0.25) !important;
+    }
+    div[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
+        color: var(--accent2) !important; /* bright cyan when selected */
+        font-weight: 700 !important;
+    }
+    
+    /* Style all Streamlit input controls (text inputs, selects, multiselects) to remove "white boxes" and match the dark theme */
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stTextArea"] textarea,
+    div[data-testid="stSelectbox"] select,
+    div[data-testid="stSelectbox"] div[data-baseweb="select"],
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"],
+    div[data-baseweb="select"] > div {
+        background-color: #0e1220 !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Input placeholder styling */
+    div[data-testid="stTextInput"] input::placeholder {
+        color: var(--muted) !important;
+    }
+    
+    /* Multiselect tags styling */
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+        background-color: rgba(6, 182, 212, 0.12) !important;
+        border: 1px solid rgba(6, 182, 212, 0.25) !important;
+        color: var(--accent2) !important;
+        border-radius: 4px !important;
+    }
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] span {
         color: var(--accent2) !important;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] span {
-        color: var(--accent2) !important;
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] svg {
+        fill: var(--accent2) !important;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] p {
-        font-size: 0.95rem !important;
+    div[data-testid="stMultiSelect"] input {
+        background-color: transparent !important;
+        color: var(--text) !important;
+    }
+    
+    /* Dropdown/Listbox popover menus styling for selects and multiselects */
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="menu"] {
+        background-color: #0e1220 !important;
+        border: 1px solid var(--border) !important;
+    }
+    div[data-baseweb="popover"] li,
+    div[data-baseweb="menu"] li {
+        color: var(--text) !important;
+        background-color: transparent !important;
+        transition: background-color 0.2s ease !important;
+    }
+    div[data-baseweb="popover"] li:hover,
+    div[data-baseweb="menu"] li:hover {
+        background-color: rgba(6, 182, 212, 0.1) !important;
+        color: var(--accent2) !important;
     }
     
     /* Animations */
@@ -284,20 +349,21 @@ st.markdown(
         border-color: var(--accent2) !important;
     }
     
-    /* Custom Stat Cards styling */
+    /* Custom Stat Cards styling with hover-zoom transitions */
     .stat-card {
         background: var(--glass);
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 1.2rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
         position: relative;
         overflow: hidden;
     }
     .stat-card:hover {
-        border-color: var(--accent);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+        border-color: var(--accent) !important;
+        transform: scale(1.04) !important;
+        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2) !important;
+        z-index: 2;
     }
     .stat-glow {
         border-color: rgba(6, 182, 212, 0.3);
@@ -331,19 +397,19 @@ st.markdown(
         font-weight: 500;
     }
     
-    /* Interactive HTML findings accordion panel */
+    /* Interactive HTML findings accordion panel with hover-zoom */
     details.finding-detail-box {
         background: var(--glass);
         border: 1px solid var(--border);
         border-radius: 10px;
         margin-bottom: 0.8rem;
         padding: 0.85rem 1.1rem;
-        transition: all 0.2s ease;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
     }
     details.finding-detail-box:hover {
-        border-color: rgba(6, 182, 212, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(6, 182, 212, 0.08);
+        border-color: rgba(6, 182, 212, 0.4) !important;
+        transform: scale(1.015) !important;
+        box-shadow: 0 6px 24px rgba(6, 182, 212, 0.12) !important;
     }
     details.finding-detail-box[open] {
         border-color: var(--accent);
@@ -475,6 +541,30 @@ st.markdown(
         line-height: 1.5;
     }
     
+    /* Main title and logo transition styles for hover-zoom */
+    .main-title-container {
+        font-size: 2.2rem;
+        font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: -0.5px;
+        margin-bottom: 5px;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease !important;
+        display: inline-block;
+        transform-origin: left center;
+    }
+    .main-title-container:hover {
+        transform: scale(1.03) !important;
+        color: var(--accent2) !important;
+    }
+    .sidebar-logo-container {
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: inline-block;
+        transform-origin: left center;
+    }
+    .sidebar-logo-container:hover {
+        transform: scale(1.05) !important;
+    }
+    
     /* Scrollbar overrides */
     ::-webkit-scrollbar {
         width: 5px !important;
@@ -507,7 +597,7 @@ def _get_conf_val(c: dict) -> int:
 st.sidebar.markdown(
     """
     <div style="padding: 10px 0px; margin-bottom: 15px;">
-        <h2 style="font-family:'Space Grotesk', sans-serif; font-size:1.6rem; font-weight:700; color:var(--text); margin:0; display:inline-block;">
+        <h2 class="sidebar-logo-container" style="font-family:'Space Grotesk', sans-serif; font-size:1.6rem; font-weight:700; color:var(--text); margin:0; display:inline-block;">
             <span style="color:var(--accent2)">🤖</span> CodeLens AI
         </h2>
     </div>
@@ -681,7 +771,7 @@ if selected_tab == "Overview":
         )
     
     st.markdown('<div style="margin-top: 25px;"></div>', unsafe_allow_html=True)
-    st.markdown('<div style="font-size: 2.2rem; font-weight: 700; font-family:\'Space Grotesk\', sans-serif; letter-spacing:-0.5px; margin-bottom:5px;">// AI Code Review Agent</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-title-container">// AI Code Review Agent</div>', unsafe_allow_html=True)
     
     # Render active configuration subtitle
     active_prov = st.session_state["llm_provider"]
