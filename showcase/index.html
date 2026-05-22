@@ -349,50 +349,6 @@
         }
 
         /* 5. UNREALISTIC FUTURE FEATURES: Interactive HUD Overlay & Controls */
-        .hud-overlay {
-            position: absolute;
-            bottom: 2rem;
-            left: 2rem;
-            right: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            z-index: 6;
-            pointer-events: none;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: rgba(148, 163, 184, 0.5);
-        }
-
-        .hud-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .hud-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .hud-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: var(--color-accent);
-            animation: pulse-dot 1.5s infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        .hud-value {
-            color: var(--color-accent);
-            font-weight: 700;
-        }
 
         /* Interactive floating configuration panel */
         .config-panel {
@@ -532,27 +488,6 @@
         }
 
         /* Quick Interactive Prompt Hint */
-        .mouse-hint {
-            position: absolute;
-            bottom: 8rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: rgba(148, 163, 184, 0.4);
-            animation: bounce-slow 2s infinite ease-in-out;
-            pointer-events: none;
-            z-index: 4;
-        }
-
-        @keyframes bounce-slow {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -6px); }
-        }
 
         /* SVG Noise Filter */
         .noise-svg {
@@ -651,7 +586,7 @@
         <div class="content-card" id="hero-card">
             <div class="card-inner">
                 <div class="title-pre">// Quantum Vector Field v1.2</div>
-                <h1 class="card-title">Modern <span>Gradient</span></h1>
+                <h1 class="card-title">The Code Review / <br><span>Your Team Deserves</span></h1>
                 <p class="card-desc">
                     A sleek, highly optimized interactive canvas background featuring soft vector flow field particles, tactile noise grain, and responsive shockwave ripple generators.
                 </p>
@@ -659,31 +594,7 @@
             </div>
         </div>
 
-        <!-- Mouse Interaction Scroll / Click hint -->
-        <div class="mouse-hint">
-            <span>Hover to distort field • Click to create space-time ripples</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top: 0.2rem;">
-                <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="rgba(148,163,184,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
 
-        <!-- 5. Real-Time HUD displays (unrealistic tech overlay features) -->
-        <div class="hud-overlay">
-            <div class="hud-group">
-                <div class="hud-label">
-                    <div class="hud-dot"></div>
-                    <span>VECTOR FIELD STABILIZATION: </span>
-                    <span class="hud-value" id="hud-stabilizer">99.84%</span>
-                </div>
-                <div>SYSTEM ENERGY DRAWS: <span class="hud-value" id="hud-energy">0.041 kW</span></div>
-                <div>ACTIVE CHUNKS: <span class="hud-value">0x7FBA0D</span></div>
-            </div>
-            <div class="hud-group" style="text-align: right;">
-                <div>TENSOR SPEED: <span class="hud-value" id="hud-fps">60 FPS</span></div>
-                <div>REACTION FLUIDITY: <span class="hud-value" id="hud-fluidity">SMOOTH</span></div>
-                <div>QUANTUM ENTROPY: <span class="hud-value" id="hud-entropy">0.725 J/K</span></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -722,6 +633,20 @@
         const rippleCanvas = document.getElementById('ripple-canvas');
         const rippleCtx = rippleCanvas.getContext('2d');
         const blobsContainer = document.getElementById('blobs-container');
+
+        // Enforce explicit inline canvas styles
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.position = 'absolute';
+        canvas.style.inset = '0';
+
+        // Load background image with error fallback
+        const bgImage = new Image();
+        bgImage.crossOrigin = 'anonymous';
+        let bgImageLoaded = false;
+        bgImage.onload = () => { bgImageLoaded = true; };
+        bgImage.onerror = () => { bgImageLoaded = false; };
+        bgImage.src = '/hero-bg.jpg';
 
         // Resize handler
         function resize() {
@@ -1038,43 +963,39 @@
             });
         });
 
-        // --- 6. REAL-TIME HUD DYNAMICS ---
-        let lastTime = performance.now();
-        let frameCount = 0;
-        const fpsEl = document.getElementById('hud-fps');
-        const energyEl = document.getElementById('hud-energy');
-        const stabilizerEl = document.getElementById('hud-stabilizer');
-        const entropyEl = document.getElementById('hud-entropy');
-
-        function updateHUD() {
-            const now = performance.now();
-            frameCount++;
-            
-            if (now - lastTime >= 1000) {
-                const fps = Math.round((frameCount * 1000) / (now - lastTime));
-                fpsEl.innerText = `${fps} FPS`;
-                frameCount = 0;
-                lastTime = now;
-
-                // Generate shifting values for quantum parameters
-                const energy = (0.035 + Math.random() * 0.015).toFixed(4);
-                energyEl.innerText = `${energy} kW`;
-
-                const stability = (99.8 + Math.random() * 0.15).toFixed(2);
-                stabilizerEl.innerText = `${stability}%`;
-
-                const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
-                entropyEl.innerText = `${entropy} J/K`;
-            }
-        }
 
         // --- 7. MAIN TICK ANIMATION LOOP ---
         function loop() {
-            // Clear screens
-            ctx.fillStyle = '#030712';
-            ctx.globalAlpha = 0.28; // Trails fade effect
+            // Draw solid background (either hero image or gradient fallback)
+            if (bgImageLoaded) {
+                const canvasAspect = canvas.width / canvas.height;
+                const imgAspect = bgImage.width / bgImage.height;
+                let drawWidth, drawHeight, drawX, drawY;
+
+                if (canvasAspect > imgAspect) {
+                    drawWidth = canvas.width;
+                    drawHeight = canvas.width / imgAspect;
+                    drawX = 0;
+                    drawY = (canvas.height - drawHeight) / 2;
+                } else {
+                    drawWidth = canvas.height * imgAspect;
+                    drawHeight = canvas.height;
+                    drawX = (canvas.width - drawWidth) / 2;
+                    drawY = 0;
+                }
+                ctx.drawImage(bgImage, drawX, drawY, drawWidth, drawHeight);
+            } else {
+                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#0a0e1a');
+                grad.addColorStop(0.5, '#111827');
+                grad.addColorStop(1, '#0a0e1a');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Overlay high-opacity semi-transparent dark layer for particle trail blending
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.72)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.globalAlpha = 1;
 
             rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
 
@@ -1134,7 +1055,6 @@
             }
 
             // Update stats
-            updateHUD();
 
             requestAnimationFrame(loop);
         }

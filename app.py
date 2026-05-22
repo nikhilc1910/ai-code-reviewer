@@ -162,8 +162,14 @@ components.html(
 
             // 1. Clean up any existing elements to prevent duplicates
             ['quantum-bg-styles', 'quantum-blobs', 'grid-overlay', 'noise-overlay', 'particle-canvas', 'ripple-canvas', 'config-toggle', 'config-panel', 'hud-overlay', 'mouse-hint', 'quantum-noise-svg'].forEach(id => {
-                const el = parentDoc.getElementById(id);
-                if (el) el.remove();
+                const elements = parentDoc.querySelectorAll('#' + id);
+                elements.forEach(el => el.remove());
+            });
+
+            // Also clean up by common class names as a safety measure
+            ['hud-bar', 'quantum-blob', 'grid-overlay', 'noise-overlay', 'config-panel', 'config-toggle-btn', 'mouse-hint'].forEach(cls => {
+                const elements = parentDoc.querySelectorAll('.' + cls);
+                elements.forEach(el => el.remove());
             });
 
             // 2. Inject Dynamic Style Block for background & theme elements
@@ -845,51 +851,6 @@ components.html(
                     opacity: 0.04 !important;
                 }
 
-                .hud-bar {
-                    position: fixed !important;
-                    bottom: 2rem !important;
-                    right: 2rem !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: flex-start !important;
-                    gap: 0.4rem !important;
-                    z-index: 99998 !important;
-                    pointer-events: none !important;
-                    font-family: 'JetBrains Mono', monospace !important;
-                    font-size: 0.72rem !important;
-                    color: rgba(148, 163, 184, 0.6) !important;
-                    background: rgba(11, 15, 25, 0.65) !important;
-                    border: 1px solid var(--border) !important;
-                    border-radius: 12px !important;
-                    padding: 0.8rem 1rem !important;
-                    backdrop-filter: blur(8px) !important;
-                    -webkit-backdrop-filter: blur(8px) !important;
-                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-                }
-                
-                .hud-item {
-                    display: flex !important;
-                    align-items: center !important;
-                    gap: 0.5rem !important;
-                }
-                
-                .hud-dot {
-                    width: 6px !important;
-                    height: 6px !important;
-                    border-radius: 50% !important;
-                    background-color: var(--accent2) !important;
-                    animation: pulse-dot 1.5s infinite !important;
-                }
-                
-                @keyframes pulse-dot {
-                    0%, 100% { opacity: 0.4; transform: scale(0.9); }
-                    50% { opacity: 1; transform: scale(1.2); }
-                }
-                
-                .hud-val {
-                    color: var(--accent2) !important;
-                    font-weight: 700 !important;
-                }
 
                 .config-panel {
                     position: fixed !important;
@@ -1028,22 +989,7 @@ components.html(
                     font-weight: 700 !important;
                 }
                 
-                .mouse-hint {
-                    position: fixed !important;
-                    bottom: 8rem !important;
-                    left: 50% !important;
-                    transform: translateX(-50%) !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    gap: 0.5rem !important;
-                    font-family: 'JetBrains Mono', monospace !important;
-                    font-size: 0.7rem !important;
-                    color: rgba(148, 163, 184, 0.4) !important;
-                    animation: bounce-slow 2s infinite ease-in-out !important;
-                    pointer-events: none !important;
-                    z-index: 4 !important;
-                }
+                /* mouse-hint removed */
             `;
             parentDoc.head.appendChild(style);
 
@@ -1197,25 +1143,9 @@ components.html(
                 });
             });
 
-            // 11. HUD Telemetry overlay
-            const hud = parentDoc.createElement('div');
-            hud.id = 'hud-overlay';
-            hud.className = 'hud-bar';
-            hud.innerHTML = '                 <div class="hud-item">                     <div class="hud-dot"></div>                     <span>TELEMETRY: <span class="hud-val" id="hud-stabilizer">99.84%</span></span>                 </div>                 <div class="hud-item">                     <span>POWER: <span class="hud-val" id="hud-energy">0.041 kW</span></span>                 </div>                 <div class="hud-item">                     <span>ENTROPY: <span class="hud-val" id="hud-entropy">0.725 J/K</span></span>                 </div>                 <div class="hud-item">                     <span>FPS: <span class="hud-val" id="hud-fps">60 FPS</span></span>                 </div>             ';
-            parentDoc.body.appendChild(hud);
+            // 11. HUD Telemetry overlay removed
 
-            // 12. Mouse click/hover hint
-            const hint = parentDoc.createElement('div');
-            hint.id = 'mouse-hint';
-            hint.className = 'mouse-hint';
-            hint.innerHTML = '<span>DISTORT FIELD [HOVER] • CREATE RIPPLES [CLICK]</span>';
-            parentDoc.body.appendChild(hint);
-            setTimeout(() => {
-                if (hint) {
-                    hint.style.opacity = '0';
-                    setTimeout(() => { if (hint) hint.remove(); }, 1000);
-                }
-            }, 5000);
+            // 12. Mouse click/hover hint removed
 
             // 13. Canvas resize logic
             function resize() {
@@ -1443,34 +1373,7 @@ components.html(
                 }
             }
 
-            // 18. HUD Real-time metrics
-            let lastTime = parentWindow.performance.now();
-            let frameCount = 0;
-            const fpsEl = parentDoc.getElementById('hud-fps');
-            const energyEl = parentDoc.getElementById('hud-energy');
-            const stabilizerEl = parentDoc.getElementById('hud-stabilizer');
-            const entropyEl = parentDoc.getElementById('hud-entropy');
 
-            function updateHUD() {
-                const now = parentWindow.performance.now();
-                frameCount++;
-                
-                if (now - lastTime >= 1000) {
-                    const fps = Math.round((frameCount * 1000) / (now - lastTime));
-                    if (fpsEl) fpsEl.innerText = fps + ' FPS';
-                    frameCount = 0;
-                    lastTime = now;
-
-                    const energy = (0.035 + Math.random() * 0.015).toFixed(3);
-                    if (energyEl) energyEl.innerText = energy + ' kW';
-
-                    const stability = (99.8 + Math.random() * 0.15).toFixed(2);
-                    if (stabilizerEl) stabilizerEl.innerText = stability + '%';
-
-                    const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
-                    if (entropyEl) entropyEl.innerText = entropy + ' J/K';
-                }
-            }
 
             // 19. Parallax Card 3D tilt interaction delegated automatically
             let activeTiltCard = null;
@@ -1562,7 +1465,6 @@ components.html(
                     }
                 }
 
-                updateHUD();
 
                 if (parentWindow.quantumBgAnimationFrame) {
                     parentWindow.cancelAnimationFrame(parentWindow.quantumBgAnimationFrame);
