@@ -23,6 +23,12 @@ if not hasattr(ingestion, "clone_repo"):
 reviewer.review_chunk = reviewer.review_code
 
 
+class CommentsList(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.files = []
+
+
 def run_pipeline(repo_url: str) -> list[dict[str, Any]]:
     """Clones, parses, chunks, and reviews a repository, returning all comments.
     
@@ -31,6 +37,7 @@ def run_pipeline(repo_url: str) -> list[dict[str, Any]]:
     """
     tmp_dir_to_clean: str | None = None
     all_comments: list[dict[str, Any]] = []
+    files: list[dict[str, Any]] = []
 
     try:
         # 1. Clone repository
@@ -118,7 +125,9 @@ def run_pipeline(repo_url: str) -> list[dict[str, Any]]:
         return (sev_val, -conf_val)
 
     all_comments.sort(key=sort_key)
-    return all_comments
+    result = CommentsList(all_comments)
+    result.files = [{"path": f.get("path"), "content": f.get("content"), "language": f.get("language")} for f in files]
+    return result
 
 
 # Expose alias functions
