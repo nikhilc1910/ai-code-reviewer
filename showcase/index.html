@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Gradient Showcase — Premium Interactive Background</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030712;
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Theme color variables */
+            --color-primary: #ec4899;    /* Pink */
+            --color-secondary: #8b5cf6;  /* Purple */
+            --color-tertiary: #3b82f6;   /* Blue */
+            --color-accent: #06b6d4;     /* Cyan */
+            
+            --glass-bg: rgba(15, 23, 42, 0.3);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-glow: rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: #f3f4f6;
+            font-family: var(--font-body);
+        }
+
+        /* Fullscreen Container */
+        .showcase-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+        }
+
+        /* Canvas Particle Background */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            mix-blend-mode: screen;
+        }
+
+        /* 1. ELEGANT BLURRED GRADIENT SPHERES */
+        .gradient-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            filter: blur(140px);
+            opacity: 0.85;
+            transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: 10%;
+            width: 55vw;
+            height: 55vw;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.35) 0%, rgba(139, 92, 246, 0.05) 70%, transparent 100%);
+            animation: float-slow 25s ease-in-out infinite alternate;
+        }
+
+        .blob-2 {
+            bottom: -15%;
+            right: 5%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, rgba(6, 180, 212, 0.05) 70%, transparent 100%);
+            animation: float-medium 28s ease-in-out infinite alternate;
+        }
+
+        .blob-3 {
+            top: 30%;
+            right: 20%;
+            width: 45vw;
+            height: 45vw;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.05) 75%, transparent 100%);
+            animation: float-reverse 35s ease-in-out infinite alternate;
+        }
+
+        .blob-4 {
+            bottom: 20%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.32) 0%, rgba(59, 130, 246, 0.05) 70%, transparent 100%);
+            animation: float-fast 20s ease-in-out infinite alternate;
+        }
+
+        /* Blob animations */
+        @keyframes float-slow {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            50% { transform: translate(60px, 80px) scale(1.15) rotate(180deg); }
+            100% { transform: translate(-40px, -60px) scale(0.9) rotate(360deg); }
+        }
+
+        @keyframes float-medium {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            50% { transform: translate(-80px, 60px) scale(0.9) rotate(-120deg); }
+            100% { transform: translate(50px, -70px) scale(1.1) rotate(-240deg); }
+        }
+
+        @keyframes float-reverse {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            50% { transform: translate(70px, -90px) scale(0.85) rotate(240deg); }
+            100% { transform: translate(-60px, 80px) scale(1.1) rotate(480deg); }
+        }
+
+        @keyframes float-fast {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            50% { transform: translate(-90px, -50px) scale(1.1) rotate(-180deg); }
+            100% { transform: translate(40px, 90px) scale(0.95) rotate(-360deg); }
+        }
+
+        /* 2. SUBTLE GRID OVERLAY */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Scanline rolling effect */
+        .grid-overlay::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(255, 255, 255, 0.005) 50%,
+                transparent 100%
+            );
+            background-size: 100% 20px;
+            animation: scanlines 4s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        /* 3. PREMIUM NOISE TEXTURE OVERLAY */
+        .noise-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 8;
+            pointer-events: none;
+            opacity: 0.035;
+        }
+
+        /* 4. MODERN TYPOGRAPHY GLASSMorphic CARD with Parallax */
+        .content-card {
+            position: relative;
+            width: 600px;
+            max-width: 90vw;
+            padding: 3.5rem 3rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            text-align: center;
+            z-index: 5;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transition: box-shadow 0.5s ease, border-color 0.5s ease;
+            will-change: transform;
+        }
+
+        .content-card::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02), rgba(139, 92, 246, 0.15));
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .content-card:hover {
+            border-color: rgba(139, 92, 246, 0.2);
+            box-shadow: 
+                0 40px 80px rgba(0, 0, 0, 0.5),
+                0 0 40px var(--glass-glow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* 3D Depth elements */
+        .card-inner {
+            transform: translateZ(50px);
+        }
+
+        /* Modern Typography & Gradient Text */
+        .title-pre {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #ffffff 20%, #cbd5e1 50%, rgba(255,255,255,0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .card-title span {
+            background: linear-gradient(135deg, #ec4899 10%, #8b5cf6 50%, #06b6d4 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 8s ease infinite alternate;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card-desc {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #94a3b8;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        /* Premium interactive button */
+        .glow-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            outline: none;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+        }
+
+        .glow-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 
+                0 15px 30px rgba(139, 92, 246, 0.5),
+                0 0 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .glow-btn:active {
+            transform: scale(0.98) translateY(1px);
+        }
+
+        /* Button hover shine sweep */
+        .glow-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            transition: left 0.6s ease;
+        }
+
+        .glow-btn:hover::after {
+            left: 140%;
+        }
+
+        /* 5. UNREALISTIC FUTURE FEATURES: Interactive HUD Overlay & Controls */
+        .hud-overlay {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 6;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        .hud-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .hud-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hud-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .hud-value {
+            color: var(--color-accent);
+            font-weight: 700;
+        }
+
+        /* Interactive floating configuration panel */
+        .config-panel {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.2rem;
+            width: 250px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .config-panel.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .config-toggle-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid var(--glass-border);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 7;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        .config-toggle-btn:hover {
+            border-color: var(--color-accent);
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        .config-toggle-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #94a3b8;
+            transition: stroke 0.3s, transform 0.5s ease;
+        }
+
+        .config-toggle-btn:hover svg {
+            stroke: #ffffff;
+            transform: rotate(45deg);
+        }
+
+        .config-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .control-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .control-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.2rem;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 0.4rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+            color: #94a3b8;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-btn.active {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: #030712;
+            font-weight: 700;
+        }
+
+        /* Quick Interactive Prompt Hint */
+        .mouse-hint {
+            position: absolute;
+            bottom: 8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: rgba(148, 163, 184, 0.4);
+            animation: bounce-slow 2s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        @keyframes bounce-slow {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -6px); }
+        }
+
+        /* SVG Noise Filter */
+        .noise-svg {
+            display: none;
+        }
+
+        /* Ripple effect canvas */
+        #ripple-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG Fractal Noise Filter Definitions -->
+    <svg class="noise-svg">
+        <filter id="fractal-noise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.06 0" />
+        </filter>
+    </svg>
+
+    <div class="showcase-container">
+        <!-- 1. Gradient Blobs (Dynamic CSS-driven backgrounds) -->
+        <div class="gradient-blobs" id="blobs-container">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+            <div class="blob blob-4"></div>
+        </div>
+
+        <!-- 2. Tech Grid overlay -->
+        <div class="grid-overlay"></div>
+
+        <!-- 3. Tactile noise filter applied to overlay -->
+        <div class="noise-overlay" style="filter: url(#fractal-noise);"></div>
+
+        <!-- Canvas systems -->
+        <canvas id="particle-canvas"></canvas>
+        <canvas id="ripple-canvas"></canvas>
+
+        <!-- Configuration Panel Toggle Button -->
+        <div class="config-toggle-btn" id="config-toggle" title="Settings Panel">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+
+        <!-- 5. Future Settings Control Panel -->
+        <div class="config-panel" id="config-panel">
+            <div class="config-title">Quantum Controller</div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Gravity Warp</span>
+                    <span id="warp-val">1.2</span>
+                </div>
+                <input type="range" id="slider-warp" class="control-slider" min="0" max="3" step="0.1" value="1.2">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Quantum Count</span>
+                    <span id="count-val">150</span>
+                </div>
+                <input type="range" id="slider-count" class="control-slider" min="50" max="350" step="10" value="150">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Flow Vortex Turbulence</span>
+                    <span id="turb-val">0.3</span>
+                </div>
+                <input type="range" id="slider-turb" class="control-slider" min="0.05" max="0.8" step="0.05" value="0.3">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label"><span>Bioluminescent Theme</span></div>
+                <div class="theme-selector">
+                    <button class="theme-btn active" data-theme="nebula">NEBULA</button>
+                    <button class="theme-btn" data-theme="cyber">CYBER</button>
+                    <button class="theme-btn" data-theme="aurora">AURORA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Typography Center Card -->
+        <div class="content-card" id="hero-card">
+            <div class="card-inner">
+                <div class="title-pre">// Quantum Vector Field v1.2</div>
+                <h1 class="card-title">Modern <span>Gradient</span></h1>
+                <p class="card-desc">
+                    A sleek, highly optimized interactive canvas background featuring soft vector flow field particles, tactile noise grain, and responsive shockwave ripple generators.
+                </p>
+                <button class="glow-btn" id="interactive-pulse">Trigger Event</button>
+            </div>
+        </div>
+
+        <!-- Mouse Interaction Scroll / Click hint -->
+        <div class="mouse-hint">
+            <span>Hover to distort field • Click to create space-time ripples</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top: 0.2rem;">
+                <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="rgba(148,163,184,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <!-- 5. Real-Time HUD displays (unrealistic tech overlay features) -->
+        <div class="hud-overlay">
+            <div class="hud-group">
+                <div class="hud-label">
+                    <div class="hud-dot"></div>
+                    <span>VECTOR FIELD STABILIZATION: </span>
+                    <span class="hud-value" id="hud-stabilizer">99.84%</span>
+                </div>
+                <div>SYSTEM ENERGY DRAWS: <span class="hud-value" id="hud-energy">0.041 kW</span></div>
+                <div>ACTIVE CHUNKS: <span class="hud-value">0x7FBA0D</span></div>
+            </div>
+            <div class="hud-group" style="text-align: right;">
+                <div>TENSOR SPEED: <span class="hud-value" id="hud-fps">60 FPS</span></div>
+                <div>REACTION FLUIDITY: <span class="hud-value" id="hud-fluidity">SMOOTH</span></div>
+                <div>QUANTUM ENTROPY: <span class="hud-value" id="hud-entropy">0.725 J/K</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. GLOBAL STATE & PARAMETERS ---
+        const config = {
+            gravityWarp: 1.2,
+            particleCount: 150,
+            turbulence: 0.3,
+            theme: 'nebula',
+            colors: {
+                nebula: ['#ec4899', '#8b5cf6', '#3b82f6', '#06b6d4'],
+                cyber: ['#ff0055', '#00ffcc', '#ffff00', '#ff00ff'],
+                aurora: ['#00ff87', '#60efff', '#0061ff', '#ffe985']
+            }
+        };
+
+        const mouse = {
+            x: -1000,
+            y: -1000,
+            targetX: -1000,
+            targetY: -1000,
+            vx: 0,
+            vy: 0,
+            isMoving: false,
+            lastX: 0,
+            lastY: 0,
+            hoveringCard: false
+        };
+
+        // UI Setup
+        const heroCard = document.getElementById('hero-card');
+        const configPanel = document.getElementById('config-panel');
+        const configToggle = document.getElementById('config-toggle');
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        const rippleCanvas = document.getElementById('ripple-canvas');
+        const rippleCtx = rippleCanvas.getContext('2d');
+        const blobsContainer = document.getElementById('blobs-container');
+
+        // Resize handler
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            rippleCanvas.width = window.innerWidth;
+            rippleCanvas.height = window.innerHeight;
+            initFlowField();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- 2. CONFIG PANEL CONTROLS ---
+        configToggle.addEventListener('click', () => {
+            configPanel.classList.toggle('visible');
+        });
+
+        // Sliders
+        document.getElementById('slider-warp').addEventListener('input', (e) => {
+            config.gravityWarp = parseFloat(e.target.value);
+            document.getElementById('warp-val').innerText = config.gravityWarp.toFixed(1);
+        });
+
+        document.getElementById('slider-count').addEventListener('input', (e) => {
+            config.particleCount = parseInt(e.target.value);
+            document.getElementById('count-val').innerText = config.particleCount;
+            adjustParticleCount();
+        });
+
+        document.getElementById('slider-turb').addEventListener('input', (e) => {
+            config.turbulence = parseFloat(e.target.value);
+            document.getElementById('turb-val').innerText = config.turbulence.toFixed(2);
+        });
+
+        // Theme selector
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                config.theme = e.target.dataset.theme;
+                updateBlobsTheme();
+            });
+        });
+
+        function updateBlobsTheme() {
+            const currentColors = config.colors[config.theme];
+            const blobs = document.querySelectorAll('.blob');
+            blobs.forEach((blob, idx) => {
+                const color = currentColors[idx % currentColors.length];
+                blob.style.background = `radial-gradient(circle, ${color}33 0%, ${color}05 70%, transparent 100%)`;
+            });
+            // Instantly transition particle colors
+            particles.forEach(p => {
+                p.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
+            });
+        }
+
+        // --- 3. MOUSE TRACKING & PARALLAX ---
+        window.addEventListener('mousemove', (e) => {
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
+            mouse.isMoving = true;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.targetX = -1000;
+            mouse.targetY = -1000;
+            mouse.isMoving = false;
+        });
+
+        // Mouse hover checks for card
+        heroCard.addEventListener('mouseenter', () => { mouse.hoveringCard = true; });
+        heroCard.addEventListener('mouseleave', () => { 
+            mouse.hoveringCard = false; 
+            heroCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        });
+
+        // Card Tilt Animation (Parallax 3D effect)
+        window.addEventListener('mousemove', (e) => {
+            if (mouse.hoveringCard) {
+                const rect = heroCard.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                
+                // Tilt rotation range (+-10 degrees)
+                const rotateX = -(e.clientY - cardCenterY) / (rect.height / 2) * 10;
+                const rotateY = (e.clientX - cardCenterX) / (rect.width / 2) * 12;
+                
+                heroCard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            }
+
+            // Subtle Parallax translation on Background Blobs
+            const shiftX = (e.clientX - window.innerWidth / 2) * -0.03;
+            const shiftY = (e.clientY - window.innerHeight / 2) * -0.03;
+            blobsContainer.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
+        });
+
+        // --- 4. FLOW FIELD & INTERACTIVE PARTICLE PHYSICS ---
+        let flowField = [];
+        let cols, rows;
+        const fieldResolution = 45; // grid cell size in px
+
+        function initFlowField() {
+            cols = Math.ceil(canvas.width / fieldResolution) + 1;
+            rows = Math.ceil(canvas.height / fieldResolution) + 1;
+            flowField = new Array(cols * rows);
+            
+            for (let x = 0; x < cols; x++) {
+                for (let y = 0; y < rows; y++) {
+                    const idx = x + y * cols;
+                    // Default flow vectors point generally right/downwards
+                    flowField[idx] = {
+                        x: Math.cos(x * 0.15) * 0.2,
+                        y: Math.sin(y * 0.15) * 0.2,
+                        strength: 0.8
+                    };
+                }
+            }
+        }
+
+        // Particle definitions
+        class Particle {
+            constructor() {
+                this.reset(true);
+            }
+
+            reset(initial = false) {
+                this.x = Math.random() * canvas.width;
+                this.y = initial ? Math.random() * canvas.height : (Math.random() > 0.5 ? 0 : canvas.height);
+                this.size = Math.random() * 2 + 1.2;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.speedLimit = Math.random() * 1.5 + 2.0;
+                this.alpha = Math.random() * 0.5 + 0.3;
+                this.decay = Math.random() * 0.005 + 0.002;
+                
+                const currentColors = config.colors[config.theme];
+                this.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
+            }
+
+            update() {
+                // Determine which vector field cell particle occupies
+                const fieldX = Math.floor(this.x / fieldResolution);
+                const fieldY = Math.floor(this.y / fieldResolution);
+
+                if (fieldX >= 0 && fieldX < cols && fieldY >= 0 && fieldY < rows) {
+                    const vec = flowField[fieldX + fieldY * cols];
+                    if (vec) {
+                        // Apply flow field forces
+                        this.vx += vec.x * vec.strength * config.turbulence;
+                        this.vy += vec.y * vec.strength * config.turbulence;
+                    }
+                }
+
+                // Interactive gravity/magnetic attraction/repulsion warp
+                if (mouse.x > 0) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    const maxDist = 250;
+                    
+                    if (distSq < maxDist * maxDist) {
+                        const dist = Math.sqrt(distSq);
+                        const force = (maxDist - dist) / maxDist;
+                        
+                        // Gravitational warp logic: attracting particles or repelling based on distance
+                        if (dist > 80) {
+                            // Attraction orbital swirl
+                            const angle = Math.atan2(dy, dx);
+                            const pullStrength = force * config.gravityWarp * 0.15;
+                            // Add slightly circular orbital momentum to flow swirling
+                            this.vx += Math.cos(angle + Math.PI/2.5) * pullStrength;
+                            this.vy += Math.sin(angle + Math.PI/2.5) * pullStrength;
+                        } else {
+                            // Close range safety repulsion
+                            const angle = Math.atan2(dy, dx);
+                            const pushStrength = (80 - dist) / 80 * 0.4;
+                            this.vx -= Math.cos(angle) * pushStrength;
+                            this.vy -= Math.sin(angle) * pushStrength;
+                        }
+                    }
+                }
+
+                // Cap maximum velocities
+                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (speed > this.speedLimit) {
+                    this.vx = (this.vx / speed) * this.speedLimit;
+                    this.vy = (this.vy / speed) * this.speedLimit;
+                }
+
+                // Apply velocity
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Border checks & wraps
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                // Bioluminescent glow drawing
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.baseColor;
+                ctx.globalAlpha = this.alpha;
+                ctx.fill();
+
+                // Glow flare for larger particles
+                if (this.size > 2.2) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
+                    ctx.fillStyle = this.baseColor;
+                    ctx.globalAlpha = this.alpha * 0.18;
+                    ctx.fill();
+                }
+            }
+        }
+
+        const particles = [];
+        function adjustParticleCount() {
+            if (particles.length < config.particleCount) {
+                while (particles.length < config.particleCount) {
+                    particles.push(new Particle());
+                }
+            } else if (particles.length > config.particleCount) {
+                particles.splice(config.particleCount);
+            }
+        }
+        adjustParticleCount();
+
+        // --- 5. RIPPLE & SHOCKWAVE SYSTEM ---
+        const ripples = [];
+        class Ripple {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = Math.max(window.innerWidth, window.innerHeight) * 0.65;
+                this.speed = 12;
+                this.lineWidth = 15;
+                this.alpha = 0.85;
+                this.color = config.colors[config.theme][Math.floor(Math.random() * config.colors[config.theme].length)];
+            }
+
+            update() {
+                this.radius += this.speed;
+                // Linear decay
+                this.alpha = 1 - (this.radius / this.maxRadius);
+                
+                // Distort particles in the path of the ripple wave (unrealistic quantum distortion feature!)
+                particles.forEach(p => {
+                    const dx = p.x - this.x;
+                    const dy = p.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const diff = Math.abs(dist - this.radius);
+
+                    if (diff < 40) {
+                        const pushForce = (1 - diff / 40) * 12;
+                        const angle = Math.atan2(dy, dx);
+                        p.vx += Math.cos(angle) * pushForce * 0.6;
+                        p.vy += Math.sin(angle) * pushForce * 0.6;
+                    }
+                });
+
+                return this.radius < this.maxRadius;
+            }
+
+            draw() {
+                rippleCtx.strokeStyle = this.color;
+                rippleCtx.lineWidth = this.lineWidth * (1 - this.radius / this.maxRadius);
+                rippleCtx.globalAlpha = this.alpha * 0.15;
+                
+                // Outer ring
+                rippleCtx.beginPath();
+                rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                rippleCtx.stroke();
+
+                // Inner soft wave fill
+                rippleCtx.fillStyle = this.color;
+                rippleCtx.globalAlpha = this.alpha * 0.02;
+                rippleCtx.beginPath();
+                rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                rippleCtx.fill();
+            }
+        }
+
+        // Mouse click triggers space-time ripples
+        window.addEventListener('click', (e) => {
+            // Avoid triggering on configuration panel/button
+            if (e.target.closest('#config-panel') || e.target.closest('#config-toggle') || e.target.closest('#interactive-pulse')) {
+                return;
+            }
+            ripples.push(new Ripple(e.clientX, e.clientY));
+        });
+
+        // Trigger Event Button Click Handler
+        document.getElementById('interactive-pulse').addEventListener('click', (e) => {
+            const rect = heroCard.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            // Create a burst of multiple quantum ripples at once
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    ripples.push(new Ripple(centerX, centerY));
+                }, i * 250);
+            }
+
+            // Scatter particles instantly
+            particles.forEach(p => {
+                p.vx = (Math.random() - 0.5) * 45;
+                p.vy = (Math.random() - 0.5) * 45;
+            });
+        });
+
+        // --- 6. REAL-TIME HUD DYNAMICS ---
+        let lastTime = performance.now();
+        let frameCount = 0;
+        const fpsEl = document.getElementById('hud-fps');
+        const energyEl = document.getElementById('hud-energy');
+        const stabilizerEl = document.getElementById('hud-stabilizer');
+        const entropyEl = document.getElementById('hud-entropy');
+
+        function updateHUD() {
+            const now = performance.now();
+            frameCount++;
+            
+            if (now - lastTime >= 1000) {
+                const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                fpsEl.innerText = `${fps} FPS`;
+                frameCount = 0;
+                lastTime = now;
+
+                // Generate shifting values for quantum parameters
+                const energy = (0.035 + Math.random() * 0.015).toFixed(4);
+                energyEl.innerText = `${energy} kW`;
+
+                const stability = (99.8 + Math.random() * 0.15).toFixed(2);
+                stabilizerEl.innerText = `${stability}%`;
+
+                const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
+                entropyEl.innerText = `${entropy} J/K`;
+            }
+        }
+
+        // --- 7. MAIN TICK ANIMATION LOOP ---
+        function loop() {
+            // Clear screens
+            ctx.fillStyle = '#030712';
+            ctx.globalAlpha = 0.28; // Trails fade effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1;
+
+            rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+
+            // Lerp mouse coordinates to smooth movement (smooth transition/inertia)
+            if (mouse.isMoving) {
+                mouse.x += (mouse.targetX - mouse.x) * 0.1;
+                mouse.y += (mouse.targetY - mouse.y) * 0.1;
+            } else {
+                mouse.x = -1000;
+                mouse.y = -1000;
+            }
+
+            // Dynamic grid warping based on mouse movement (Unrealistic vortex effect!)
+            if (mouse.x > 0) {
+                for (let x = 0; x < cols; x++) {
+                    for (let y = 0; y < rows; y++) {
+                        const idx = x + y * cols;
+                        const cellX = x * fieldResolution;
+                        const cellY = y * fieldResolution;
+                        
+                        const dx = mouse.x - cellX;
+                        const dy = mouse.y - cellY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < 320) {
+                            // Circular swirling torque (magnetic/quantum vortex)
+                            const angle = Math.atan2(dy, dx) + Math.PI/2;
+                            const force = (320 - dist) / 320;
+                            
+                            flowField[idx].x = Math.cos(angle) * force * 1.5;
+                            flowField[idx].y = Math.sin(angle) * force * 1.5;
+                            flowField[idx].strength = 1.6;
+                        } else {
+                            // Slowly restore base flow vectors
+                            flowField[idx].x += (Math.cos(x * 0.15) * 0.2 - flowField[idx].x) * 0.05;
+                            flowField[idx].y += (Math.sin(y * 0.15) * 0.2 - flowField[idx].y) * 0.05;
+                            flowField[idx].strength += (0.8 - flowField[idx].strength) * 0.05;
+                        }
+                    }
+                }
+            }
+
+            // Update & draw particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Update & draw ripples
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const active = ripples[i].update();
+                if (active) {
+                    ripples[i].draw();
+                } else {
+                    ripples.splice(i, 1);
+                }
+            }
+
+            // Update stats
+            updateHUD();
+
+            requestAnimationFrame(loop);
+        }
+
+        // Kick off loop
+        loop();
+    </script>
+</body>
+</html>
