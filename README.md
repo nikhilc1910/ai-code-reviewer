@@ -69,8 +69,58 @@ Configure the following variables in your `.env` file:
 - **API Rate Limits**: Scanning very large repositories can hit LLM rate limits due to high token volumes.
 - **Confidence Scores**: Ratings are self-reported by the LLM and are subject to estimation biases.
 
-## What I'd Build Next
+## 🚀 Feature Roadmap & Ideas (Open for Contributions!)
 
-- **GitHub PR Integration**: Connect the GitHub API to automatically post inline comments directly on pull requests.
-- **Tree-sitter Grammars**: Incorporate tree-sitter to parse JavaScript and TypeScript files into syntax trees.
-- **Review Caching Layer**: Track file checksums to skip LLM calls on files that have not changed since the last review.
+This project is open-source and welcomes contributions! Here are some of the exciting features and enhancements we would love to see built next:
+
+- **🔌 GitHub Action / PR Integration**: Create a GitHub Action that runs on pull requests, parses modifications, and posts inline review comments directly to the PR diff.
+- **🌳 Tree-sitter Grammars**: Add robust parser support for JavaScript, TypeScript, Go, and Rust by compiling and loading Tree-sitter grammars.
+- **⚡ Review Caching Layer**: Implement a local SQLite caching system tracking file checksums to skip LLM analysis on files that haven't changed.
+- **🧠 Vector RAG (Chat with Code)**: Embed AST chunks into a vector database (e.g., ChromaDB) to allow users to ask general architectural questions about the repository.
+- **📋 Custom Rubrics & Linting Rules**: Allow users to supply their own review guidelines or code standards as markdown rules files.
+- **🤖 Local LLM Support**: Integrate Ollama/Llama.cpp to enable offline code reviews using local models like Llama-3 or Mistral.
+
+---
+
+## 🤝 How to Contribute
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+### 1. Fork the Project
+Click the "Fork" button at the top-right of this repository to create your own copy of the codebase.
+
+### 2. Clone and Setup Branch
+```bash
+# Clone your fork
+git clone https://github.com/YOUR_USERNAME/ai-code-reviewer.git
+cd ai-code-reviewer
+
+# Create a feature branch
+git checkout -b feature/amazing-feature
+```
+
+### 3. Run Verification Tests
+Before writing any code or opening a PR, ensure the local environment works perfectly:
+```bash
+# Run pytest unit tests
+pytest --ignore=scratch --ignore=smoke_test.py
+
+# Run the end-to-end integration smoke test
+python smoke_test.py
+```
+
+### 4. Commit and Push
+Ensure your commit messages follow a clean standard (e.g., `feat: ...`, `fix: ...`, `docs: ...`):
+```bash
+# Stage changes
+git add .
+
+# Commit changes
+git commit -m "feat: add support for local Ollama reviews"
+
+# Push to your feature branch
+git push origin feature/amazing-feature
+```
+
+### 5. Open a Pull Request
+Go to the original repository and click **New Pull Request** to submit your changes for review!
