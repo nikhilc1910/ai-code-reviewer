@@ -848,16 +848,23 @@ components.html(
                 .hud-bar {
                     position: fixed !important;
                     bottom: 2rem !important;
-                    left: 2rem !important;
                     right: 2rem !important;
                     display: flex !important;
-                    justify-content: space-between !important;
-                    align-items: flex-end !important;
-                    z-index: 6 !important;
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    gap: 0.4rem !important;
+                    z-index: 99998 !important;
                     pointer-events: none !important;
                     font-family: 'JetBrains Mono', monospace !important;
-                    font-size: 0.75rem !important;
-                    color: rgba(148, 163, 184, 0.5) !important;
+                    font-size: 0.72rem !important;
+                    color: rgba(148, 163, 184, 0.6) !important;
+                    background: rgba(11, 15, 25, 0.65) !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 12px !important;
+                    padding: 0.8rem 1rem !important;
+                    backdrop-filter: blur(8px) !important;
+                    -webkit-backdrop-filter: blur(8px) !important;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
                 }
                 
                 .hud-item {
@@ -872,6 +879,11 @@ components.html(
                     border-radius: 50% !important;
                     background-color: var(--accent2) !important;
                     animation: pulse-dot 1.5s infinite !important;
+                }
+                
+                @keyframes pulse-dot {
+                    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+                    50% { opacity: 1; transform: scale(1.2); }
                 }
                 
                 .hud-val {
