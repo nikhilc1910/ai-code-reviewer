@@ -1,14 +1,20 @@
 # AI Code Review Agent
 
+<div align="center">
+
 [![Deploy to Streamlit](https://img.shields.io/badge/Live_App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://ai-code-reviewer-vtktnacbukrw87589atwck.streamlit.app/)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-> [!TIP]
-> ### ⚡ Play in the Sandbox
-> Skip the local installation steps and test the review agent instantly!
-> 
-> 👉 **[Launch the Live Dashboard](https://ai-code-reviewer-vtktnacbukrw87589atwck.streamlit.app/)**
+<h3>⚡ Try the Live Dashboard Instantly ⚡</h3>
+
+No installation required! Scan any public GitHub repository directly from your browser.
+
+[![AI Code Reviewer Dashboard Mockup](assets/dashboard_mockup.png)](https://ai-code-reviewer-vtktnacbukrw87589atwck.streamlit.app/)
+
+👉 **[Launch AI Code Reviewer Live](https://ai-code-reviewer-vtktnacbukrw87589atwck.streamlit.app/)** 👈
+
+</div>
 
 An autonomous repository review agent that clones public GitHub repositories, performs AST-based Python code parsing, slices code into logical chunks, and generates confidence-rated review findings using LLMs. The results are displayed in a clean, filterable Streamlit dashboard.
 
