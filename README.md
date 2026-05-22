@@ -30,8 +30,6 @@ Scan public GitHub repositories instantly in the web dashboard, or explore the p
   <p><i>Figure 1: The Sentinel Product Landing Page - Professional product presentation</i></p>
 </div>
 
----
-
 ## 📋 Project Overview
 
 **CodeLens AI** (commercially branded as **Sentinel**) is an autonomous repository analysis agent that automates python and javascript/typescript code reviews. The agent clones public GitHub repositories, builds Abstract Syntax Tree (AST) representations of Python source code, groups them into logical class and function-level chunks, runs deep LLM review iterations using state-of-the-art models (Groq, OpenAI, Anthropic), and produces confidence-rated, schema-validated review findings.
@@ -39,6 +37,20 @@ Scan public GitHub repositories instantly in the web dashboard, or explore the p
 The twist of CodeLens AI is its **interactive confidence scoring mechanism**. Every review finding is returned with a self-assessed confidence rating. The dashboard automatically filters, groups, and tags findings:
 * **High Confidence (>= 50%)**: Displayed on the main review panel with progress indicators.
 * **Low Confidence (< 50%)**: Segmented into a warning drawer ("Needs Verification") to alert developers that manual verification is needed before acting on the suggestion.
+
+---
+
+## 🖥️ Interactive Review Dashboard
+
+To make review exploration seamless, CodeLens AI features a cyberpunk-themed Streamlit dashboard:
+
+<div align="center">
+  <img src="assets/dashboard_screenshot.png" alt="CodeLens AI Review Dashboard" width="850" style="border-radius:12px; border:1px solid rgba(6, 182, 212, 0.2); box-shadow:0 12px 40px rgba(0,0,0,0.4);" />
+  <p><i>Figure 2: CodeLens AI Interactive Streamlit Review Dashboard</i></p>
+</div>
+
+> [!NOTE]
+> **Real-Time Code Analysis**: The dashboard displays key metrics (Total, Critical, and Security Issues along with Average Confidence) and breaks down finding details in real time. It uses a custom confidence-rating filter so that you can focus on high-confidence insights or inspect lower-confidence findings in a separate drawer.
 
 ---
 
