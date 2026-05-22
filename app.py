@@ -193,21 +193,26 @@ st.markdown(
         background-color: transparent !important;
     }
     
-    /* Subtle tech grid background and scanline overlay on body */
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-image: 
-            linear-gradient(rgba(6, 182, 212, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6, 182, 212, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-        background-position: center;
-        pointer-events: none;
-        z-index: -2;
+    /* Keyframe animations for blurred gradient blobs floating in the background */
+    @keyframes float-slow {
+        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+        50% { transform: translate(60px, 80px) scale(1.15) rotate(180deg); }
+        100% { transform: translate(-40px, -60px) scale(0.9) rotate(360deg); }
+    }
+    @keyframes float-medium {
+        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+        50% { transform: translate(-80px, 60px) scale(0.9) rotate(-120deg); }
+        100% { transform: translate(50px, -70px) scale(1.1) rotate(-240deg); }
+    }
+    @keyframes float-reverse {
+        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+        50% { transform: translate(70px, -90px) scale(0.85) rotate(240deg); }
+        100% { transform: translate(-60px, 80px) scale(1.1) rotate(480deg); }
+    }
+    @keyframes float-fast {
+        0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+        50% { transform: translate(-90px, -50px) scale(1.1) rotate(-180deg); }
+        100% { transform: translate(40px, 90px) scale(0.95) rotate(-360deg); }
     }
     
     body::after {
@@ -819,6 +824,832 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+    r"""
+    <img src="x" onerror="
+        if (!window.quantumBgInitialized || !document.getElementById('particle-canvas')) {
+            window.quantumBgInitialized = true;
+            (function() {
+                // 1. Clean up any existing elements to prevent duplicates
+                ['quantum-bg-styles', 'quantum-blobs', 'grid-overlay', 'noise-overlay', 'particle-canvas', 'ripple-canvas', 'config-toggle', 'config-panel', 'hud-overlay', 'mouse-hint', 'quantum-noise-svg'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.remove();
+                });
+
+                // 2. Inject Dynamic Style Block for background elements
+                const style = document.createElement('style');
+                style.id = 'quantum-bg-styles';
+                style.textContent = `
+                    @keyframes scanlines {
+                        0% { background-position: 0 0; }
+                        100% { background-position: 0 100%; }
+                    }
+                    @keyframes pulse-dot {
+                        0%, 100% { opacity: 0.4; }
+                        50% { opacity: 1; transform: scale(1.2); }
+                    }
+                    @keyframes bounce-slow {
+                        0%, 100% { transform: translate(-50%, 0); }
+                        50% { transform: translate(-50%, -6px); }
+                    }
+                    .quantum-blob {
+                        position: absolute;
+                        border-radius: 50%;
+                        mix-blend-mode: screen;
+                        will-change: transform;
+                    }
+                    .grid-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100vw;
+                        height: 100vh;
+                        z-index: -7;
+                        pointer-events: none;
+                        background-size: 50px 50px;
+                        background-image: 
+                            linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+                        mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
+                        -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%);
+                    }
+                    .grid-overlay::after {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(
+                            to bottom,
+                            transparent 0%,
+                            rgba(255, 255, 255, 0.005) 50%,
+                            transparent 100%
+                        );
+                        background-size: 100% 20px;
+                        animation: scanlines 4s linear infinite;
+                    }
+                    .config-toggle-btn {
+                        position: fixed;
+                        top: 80px;
+                        right: 24px;
+                        background: rgba(15, 23, 42, 0.45);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        z-index: 999999;
+                        backdrop-filter: blur(12px);
+                        -webkit-backdrop-filter: blur(12px);
+                        transition: border-color 0.3s, background-color 0.3s;
+                    }
+                    .config-toggle-btn:hover {
+                        border-color: #06b6d4;
+                        background: rgba(15, 23, 42, 0.7);
+                    }
+                    .config-toggle-btn svg {
+                        width: 18px;
+                        height: 18px;
+                        stroke: #94a3b8;
+                        transition: stroke 0.3s, transform 0.5s ease;
+                    }
+                    .config-toggle-btn:hover svg {
+                        stroke: #ffffff;
+                        transform: rotate(45deg);
+                    }
+                    .config-panel {
+                        position: fixed;
+                        top: 130px;
+                        right: 24px;
+                        background: rgba(15, 23, 42, 0.6);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        border-radius: 16px;
+                        padding: 1.2rem;
+                        width: 250px;
+                        backdrop-filter: blur(20px);
+                        -webkit-backdrop-filter: blur(20px);
+                        z-index: 999999;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                        display: flex;
+                        flex-direction: column;
+                        gap: 1rem;
+                        opacity: 0;
+                        transform: translateY(-10px);
+                        pointer-events: none;
+                        transition: opacity 0.4s ease, transform 0.4s ease;
+                    }
+                    .config-panel.visible {
+                        opacity: 1;
+                        transform: translateY(0);
+                        pointer-events: all;
+                    }
+                    .config-title {
+                        font-size: 0.75rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 0.1em;
+                        color: #ffffff;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                        padding-bottom: 0.5rem;
+                    }
+                    .control-group {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.3rem;
+                    }
+                    .control-label {
+                        font-size: 0.65rem;
+                        color: #94a3b8;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    .control-slider {
+                        -webkit-appearance: none;
+                        width: 100%;
+                        height: 4px;
+                        border-radius: 2px;
+                        background: rgba(255,255,255,0.1);
+                        outline: none;
+                    }
+                    .control-slider::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        background: #06b6d4;
+                        cursor: pointer;
+                        transition: transform 0.1s;
+                    }
+                    .control-slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.3);
+                    }
+                    .theme-selector {
+                        display: flex;
+                        gap: 0.4rem;
+                        margin-top: 0.2rem;
+                    }
+                    .theme-btn {
+                        flex: 1;
+                        padding: 0.4rem 0;
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        background: rgba(255, 255, 255, 0.02);
+                        color: #94a3b8;
+                        font-family: inherit;
+                        font-size: 0.6rem;
+                        font-weight: 600;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    }
+                    .theme-btn.active {
+                        background: #06b6d4;
+                        border-color: #06b6d4;
+                        color: #030712;
+                        font-weight: 700;
+                    }
+                    .mouse-hint {
+                        position: fixed;
+                        bottom: 60px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.4rem;
+                        font-family: 'JetBrains Mono', monospace;
+                        font-size: 0.65rem;
+                        color: rgba(148, 163, 184, 0.35);
+                        animation: bounce-slow 2s infinite ease-in-out;
+                        pointer-events: none;
+                        z-index: 999998;
+                        transition: opacity 1s ease;
+                    }
+                    .hud-bar {
+                        position: fixed;
+                        bottom: 16px;
+                        right: 24px;
+                        background: rgba(11, 15, 25, 0.45);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        border-radius: 10px;
+                        padding: 6px 14px;
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                        z-index: 999999;
+                        pointer-events: none;
+                        font-family: 'JetBrains Mono', monospace;
+                        font-size: 0.65rem;
+                        color: rgba(241, 245, 249, 0.6);
+                        display: flex;
+                        gap: 14px;
+                        align-items: center;
+                        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+                    }
+                    .hud-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    .hud-dot {
+                        width: 5px;
+                        height: 5px;
+                        border-radius: 50%;
+                        background-color: #06b6d4;
+                        animation: pulse-dot 1.5s infinite;
+                    }
+                    .hud-val {
+                        color: #06b6d4;
+                        font-weight: 700;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // 3. Global Config & Theme Parameters
+                const config = {
+                    gravityWarp: 1.2,
+                    particleCount: 150,
+                    turbulence: 0.3,
+                    theme: 'nebula',
+                    colors: {
+                        nebula: ['#ec4899', '#8b5cf6', '#3b82f6', '#06b6d4'],
+                        cyber: ['#ff0055', '#00ffcc', '#ffff00', '#ff00ff'],
+                        aurora: ['#00ff87', '#60efff', '#0061ff', '#ffe985']
+                    }
+                };
+
+                const mouse = {
+                    x: -1000,
+                    y: -1000,
+                    targetX: -1000,
+                    targetY: -1000,
+                    isMoving: false
+                };
+
+                // 4. Blobs Container setup
+                const blobs = document.createElement('div');
+                blobs.id = 'quantum-blobs';
+                blobs.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; overflow:hidden; z-index:-10; filter:blur(140px); opacity:0.65; pointer-events:none; transition:transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);';
+                
+                const blobStyles = [
+                    { class: 'float-slow', css: 'top:-10%; left:10%; width:55vw; height:55vw;' },
+                    { class: 'float-medium', css: 'bottom:-15%; right:5%; width:60vw; height:60vw;' },
+                    { class: 'float-reverse', css: 'top:30%; right:20%; width:45vw; height:45vw;' },
+                    { class: 'float-fast', css: 'bottom:20%; left:-10%; width:50vw; height:50vw;' }
+                ];
+                
+                function createBlobs() {
+                    blobs.innerHTML = '';
+                    const currentColors = config.colors[config.theme];
+                    for(let i=0; i<4; i++) {
+                        const b = document.createElement('div');
+                        b.className = 'quantum-blob';
+                        const color = currentColors[i % currentColors.length];
+                        b.style.cssText = 'position:absolute; border-radius:50%; mix-blend-mode:screen; will-change:transform; ' + blobStyles[i].css + ' background:radial-gradient(circle, ' + color + '33 0%, ' + color + '05 70%, transparent 100%); animation:' + blobStyles[i].class + ' ' + (20 + i*4) + 's ease-in-out infinite alternate;';
+                        blobs.appendChild(b);
+                    }
+                }
+                createBlobs();
+                document.body.appendChild(blobs);
+
+                // 5. Tech Grid setup
+                const grid = document.createElement('div');
+                grid.id = 'grid-overlay';
+                grid.className = 'grid-overlay';
+                document.body.appendChild(grid);
+
+                // 6. SVG Noise filter definition
+                if (!document.getElementById('quantum-noise-svg')) {
+                    const svgNS = 'http://www.w3.org/2000/svg';
+                    const svg = document.createElementNS(svgNS, 'svg');
+                    svg.id = 'quantum-noise-svg';
+                    svg.style.display = 'none';
+                    const filter = document.createElementNS(svgNS, 'filter');
+                    filter.setAttribute('id', 'quantum-noise');
+                    const turb = document.createElementNS(svgNS, 'feTurbulence');
+                    turb.setAttribute('type', 'fractalNoise');
+                    turb.setAttribute('baseFrequency', '0.75');
+                    turb.setAttribute('numOctaves', '3');
+                    turb.setAttribute('stitchTiles', 'stitch');
+                    const colorMatrix = document.createElementNS(svgNS, 'feColorMatrix');
+                    colorMatrix.setAttribute('type', 'matrix');
+                    colorMatrix.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0');
+                    filter.appendChild(turb);
+                    filter.appendChild(colorMatrix);
+                    svg.appendChild(filter);
+                    document.body.appendChild(svg);
+                }
+
+                // 7. Noise Overlay setup
+                const noise = document.createElement('div');
+                noise.id = 'noise-overlay';
+                noise.className = 'noise-overlay';
+                noise.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-6; pointer-events:none; opacity:0.04; filter:url(#quantum-noise);';
+                document.body.appendChild(noise);
+
+                // 8. Particle Canvas setup
+                const canvas = document.createElement('canvas');
+                canvas.id = 'particle-canvas';
+                canvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-9; pointer-events:none; mix-blend-mode:screen;';
+                document.body.appendChild(canvas);
+                const ctx = canvas.getContext('2d');
+
+                // 9. Ripple Canvas setup
+                const rippleCanvas = document.createElement('canvas');
+                rippleCanvas.id = 'ripple-canvas';
+                rippleCanvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-8; pointer-events:none; mix-blend-mode:screen;';
+                document.body.appendChild(rippleCanvas);
+                const rippleCtx = rippleCanvas.getContext('2d');
+
+                // 10. Floating settings controls
+                const toggle = document.createElement('div');
+                toggle.id = 'config-toggle';
+                toggle.className = 'config-toggle-btn';
+                toggle.title = 'Quantum Controller Settings';
+                toggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>';
+                document.body.appendChild(toggle);
+
+                const panel = document.createElement('div');
+                panel.id = 'config-panel';
+                panel.className = 'config-panel';
+                panel.innerHTML = ' \
+                    <div class="config-title">Quantum Controller</div> \
+                    <div class="control-group"> \
+                        <div class="control-label"> \
+                            <span>Gravity Warp</span> \
+                            <span id="warp-val">' + config.gravityWarp.toFixed(1) + '</span> \
+                        </div> \
+                        <input type="range" id="slider-warp" class="control-slider" min="0" max="3" step="0.1" value="' + config.gravityWarp + '"> \
+                    </div> \
+                    <div class="control-group"> \
+                        <div class="control-label"> \
+                            <span>Quantum Count</span> \
+                            <span id="count-val">' + config.particleCount + '</span> \
+                        </div> \
+                        <input type="range" id="slider-count" class="control-slider" min="50" max="300" step="10" value="' + config.particleCount + '"> \
+                    </div> \
+                    <div class="control-group"> \
+                        <div class="control-label"> \
+                            <span>Turbulence</span> \
+                            <span id="turb-val">' + config.turbulence.toFixed(2) + '</span> \
+                        </div> \
+                        <input type="range" id="slider-turb" class="control-slider" min="0.05" max="0.8" step="0.05" value="' + config.turbulence + '"> \
+                    </div> \
+                    <div class="control-group"> \
+                        <div class="control-label"><span>Theme</span></div> \
+                        <div class="theme-selector"> \
+                            <button class="theme-btn active" data-theme="nebula">NEBULA</button> \
+                            <button class="theme-btn" data-theme="cyber">CYBER</button> \
+                            <button class="theme-btn" data-theme="aurora">AURORA</button> \
+                        </div> \
+                    </div> \
+                ';
+                document.body.appendChild(panel);
+
+                toggle.addEventListener('click', (e) => {
+                    panel.classList.toggle('visible');
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!panel.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+                        panel.classList.remove('visible');
+                    }
+                });
+
+                panel.querySelector('#slider-warp').addEventListener('input', (e) => {
+                    config.gravityWarp = parseFloat(e.target.value);
+                    panel.querySelector('#warp-val').innerText = config.gravityWarp.toFixed(1);
+                });
+
+                panel.querySelector('#slider-count').addEventListener('input', (e) => {
+                    config.particleCount = parseInt(e.target.value);
+                    panel.querySelector('#count-val').innerText = config.particleCount;
+                    adjustParticleCount();
+                });
+
+                panel.querySelector('#slider-turb').addEventListener('input', (e) => {
+                    config.turbulence = parseFloat(e.target.value);
+                    panel.querySelector('#turb-val').innerText = config.turbulence.toFixed(2);
+                });
+
+                panel.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        panel.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        config.theme = e.target.dataset.theme;
+                        createBlobs();
+                        // Instantly transition particle colors
+                        const currentColors = config.colors[config.theme];
+                        particles.forEach(p => {
+                            p.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
+                        });
+                    });
+                });
+
+                // 11. HUD Telemetry overlay
+                const hud = document.createElement('div');
+                hud.id = 'hud-overlay';
+                hud.className = 'hud-bar';
+                hud.innerHTML = ' \
+                    <div class="hud-item"> \
+                        <div class="hud-dot"></div> \
+                        <span>TELEMETRY: <span class="hud-val" id="hud-stabilizer">99.84%</span></span> \
+                    </div> \
+                    <div class="hud-item"> \
+                        <span>POWER: <span class="hud-val" id="hud-energy">0.041 kW</span></span> \
+                    </div> \
+                    <div class="hud-item"> \
+                        <span>ENTROPY: <span class="hud-val" id="hud-entropy">0.725 J/K</span></span> \
+                    </div> \
+                    <div class="hud-item"> \
+                        <span>FPS: <span class="hud-val" id="hud-fps">60 FPS</span></span> \
+                    </div> \
+                ';
+                document.body.appendChild(hud);
+
+                // 12. Mouse click/hover hint
+                const hint = document.createElement('div');
+                hint.id = 'mouse-hint';
+                hint.className = 'mouse-hint';
+                hint.innerHTML = '<span>DISTORT FIELD [HOVER] • CREATE RIPPLES [CLICK]</span>';
+                document.body.appendChild(hint);
+                setTimeout(() => {
+                    if (hint) {
+                        hint.style.opacity = '0';
+                        setTimeout(() => { if (hint) hint.remove(); }, 1000);
+                    }
+                }, 5000);
+
+                // 13. Canvas resize logic
+                function resize() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    rippleCanvas.width = window.innerWidth;
+                    rippleCanvas.height = window.innerHeight;
+                    initFlowField();
+                }
+
+                // 14. Event listeners & Parallax translations
+                function handleMouseMove(e) {
+                    mouse.targetX = e.clientX;
+                    mouse.targetY = e.clientY;
+                    mouse.isMoving = true;
+
+                    const shiftX = (e.clientX - window.innerWidth / 2) * -0.015;
+                    const shiftY = (e.clientY - window.innerHeight / 2) * -0.015;
+                    blobs.style.transform = 'translate(' + shiftX + 'px, ' + shiftY + 'px)';
+                }
+
+                function handleMouseOut() {
+                    mouse.targetX = -1000;
+                    mouse.targetY = -1000;
+                    mouse.isMoving = false;
+                }
+
+                function handleClick(e) {
+                    // Ignore interactive UI components to prevent blocking input fields
+                    if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || e.target.closest('[data-testid=stSidebar]') || e.target.closest('#config-panel') || e.target.closest('#config-toggle')) {
+                        return;
+                    }
+                    ripples.push(new Ripple(e.clientX, e.clientY));
+                }
+
+                // Clean up any old listeners in case of hot-reload / rerun
+                if (window.quantumBgListeners) {
+                    window.removeEventListener('resize', window.quantumBgListeners.resize);
+                    window.removeEventListener('mousemove', window.quantumBgListeners.mousemove);
+                    window.removeEventListener('mouseout', window.quantumBgListeners.mouseout);
+                    window.removeEventListener('click', window.quantumBgListeners.click);
+                }
+
+                window.quantumBgListeners = {
+                    resize: resize,
+                    mousemove: handleMouseMove,
+                    mouseout: handleMouseOut,
+                    click: handleClick
+                };
+
+                window.addEventListener('resize', resize);
+                window.addEventListener('mousemove', handleMouseMove);
+                window.addEventListener('mouseout', handleMouseOut);
+                window.addEventListener('click', handleClick);
+
+                resize();
+
+                // 15. Flow Field Setup
+                let flowField = [];
+                let cols, rows;
+                const fieldResolution = 45;
+
+                function initFlowField() {
+                    cols = Math.ceil(canvas.width / fieldResolution) + 1;
+                    rows = Math.ceil(canvas.height / fieldResolution) + 1;
+                    flowField = new Array(cols * rows);
+                    
+                    for (let x = 0; x < cols; x++) {
+                        for (let y = 0; y < rows; y++) {
+                            const idx = x + y * cols;
+                            flowField[idx] = {
+                                x: Math.cos(x * 0.15) * 0.2,
+                                y: Math.sin(y * 0.15) * 0.2,
+                                strength: 0.8
+                            };
+                        }
+                    }
+                }
+
+                // 16. Bioluminescent physics particles
+                class Particle {
+                    constructor() {
+                        this.reset(true);
+                    }
+
+                    reset(initial = false) {
+                        this.x = Math.random() * canvas.width;
+                        this.y = initial ? Math.random() * canvas.height : (Math.random() > 0.5 ? 0 : canvas.height);
+                        this.size = Math.random() * 2 + 1.2;
+                        this.vx = (Math.random() - 0.5) * 0.5;
+                        this.vy = (Math.random() - 0.5) * 0.5;
+                        this.speedLimit = Math.random() * 1.5 + 2.0;
+                        this.alpha = Math.random() * 0.5 + 0.3;
+                        
+                        const currentColors = config.colors[config.theme];
+                        this.baseColor = currentColors[Math.floor(Math.random() * currentColors.length)];
+                    }
+
+                    update() {
+                        const fieldX = Math.floor(this.x / fieldResolution);
+                        const fieldY = Math.floor(this.y / fieldResolution);
+
+                        if (fieldX >= 0 && fieldX < cols && fieldY >= 0 && fieldY < rows) {
+                            const vec = flowField[fieldX + fieldY * cols];
+                            if (vec) {
+                                this.vx += vec.x * vec.strength * config.turbulence;
+                                this.vy += vec.y * vec.strength * config.turbulence;
+                            }
+                        }
+
+                        if (mouse.x > 0) {
+                            const dx = mouse.x - this.x;
+                            const dy = mouse.y - this.y;
+                            const distSq = dx * dx + dy * dy;
+                            const maxDist = 250;
+                            
+                            if (distSq < maxDist * maxDist) {
+                                const dist = Math.sqrt(distSq);
+                                const force = (maxDist - dist) / maxDist;
+                                
+                                if (dist > 80) {
+                                    const angle = Math.atan2(dy, dx);
+                                    const pullStrength = force * config.gravityWarp * 0.15;
+                                    this.vx += Math.cos(angle + Math.PI/2.5) * pullStrength;
+                                    this.vy += Math.sin(angle + Math.PI/2.5) * pullStrength;
+                                } else {
+                                    const angle = Math.atan2(dy, dx);
+                                    const pushStrength = (80 - dist) / 80 * 0.4;
+                                    this.vx -= Math.cos(angle) * pushStrength;
+                                    this.vy -= Math.sin(angle) * pushStrength;
+                                }
+                            }
+                        }
+
+                        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                        if (speed > this.speedLimit) {
+                            this.vx = (this.vx / speed) * this.speedLimit;
+                            this.vy = (this.vy / speed) * this.speedLimit;
+                        }
+
+                        this.x += this.vx;
+                        this.y += this.vy;
+
+                        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                            this.reset(false);
+                        }
+                    }
+
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = this.baseColor;
+                        ctx.globalAlpha = this.alpha;
+                        ctx.fill();
+
+                        if (this.size > 2.2) {
+                            ctx.beginPath();
+                            ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
+                            ctx.fillStyle = this.baseColor;
+                            ctx.globalAlpha = this.alpha * 0.18;
+                            ctx.fill();
+                        }
+                    }
+                }
+
+                const particles = [];
+                function adjustParticleCount() {
+                    if (particles.length < config.particleCount) {
+                        while (particles.length < config.particleCount) {
+                            particles.push(new Particle());
+                        }
+                    } else if (particles.length > config.particleCount) {
+                        particles.splice(config.particleCount);
+                    }
+                }
+                adjustParticleCount();
+
+                // 17. Ripple effect system
+                const ripples = [];
+                class Ripple {
+                    constructor(x, y) {
+                        this.x = x;
+                        this.y = y;
+                        this.radius = 0;
+                        this.maxRadius = Math.max(window.innerWidth, window.innerHeight) * 0.65;
+                        this.speed = 12;
+                        this.lineWidth = 15;
+                        this.alpha = 0.85;
+                        this.color = config.colors[config.theme][Math.floor(Math.random() * config.colors[config.theme].length)];
+                    }
+
+                    update() {
+                        this.radius += this.speed;
+                        this.alpha = 1 - (this.radius / this.maxRadius);
+                        
+                        particles.forEach(p => {
+                            const dx = p.x - this.x;
+                            const dy = p.y - this.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            const diff = Math.abs(dist - this.radius);
+
+                            if (diff < 40) {
+                                const pushForce = (1 - diff / 40) * 12;
+                                const angle = Math.atan2(dy, dx);
+                                p.vx += Math.cos(angle) * pushForce * 0.6;
+                                p.vy += Math.sin(angle) * pushForce * 0.6;
+                            }
+                        });
+
+                        return this.radius < this.maxRadius;
+                    }
+
+                    draw() {
+                        rippleCtx.strokeStyle = this.color;
+                        rippleCtx.lineWidth = this.lineWidth * (1 - this.radius / this.maxRadius);
+                        rippleCtx.globalAlpha = this.alpha * 0.15;
+                        
+                        rippleCtx.beginPath();
+                        rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        rippleCtx.stroke();
+
+                        rippleCtx.fillStyle = this.color;
+                        rippleCtx.globalAlpha = this.alpha * 0.02;
+                        rippleCtx.beginPath();
+                        rippleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        rippleCtx.fill();
+                    }
+                }
+
+                // 18. HUD Real-time metrics
+                let lastTime = performance.now();
+                let frameCount = 0;
+                const fpsEl = document.getElementById('hud-fps');
+                const energyEl = document.getElementById('hud-energy');
+                const stabilizerEl = document.getElementById('hud-stabilizer');
+                const entropyEl = document.getElementById('hud-entropy');
+
+                function updateHUD() {
+                    const now = performance.now();
+                    frameCount++;
+                    
+                    if (now - lastTime >= 1000) {
+                        const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                        if (fpsEl) fpsEl.innerText = fps + ' FPS';
+                        frameCount = 0;
+                        lastTime = now;
+
+                        const energy = (0.035 + Math.random() * 0.015).toFixed(3);
+                        if (energyEl) energyEl.innerText = energy + ' kW';
+
+                        const stability = (99.8 + Math.random() * 0.15).toFixed(2);
+                        if (stabilizerEl) stabilizerEl.innerText = stability + '%';
+
+                        const entropy = (0.7 + Math.random() * 0.05).toFixed(3);
+                        if (entropyEl) entropyEl.innerText = entropy + ' J/K';
+                    }
+                }
+
+                // 19. Parallax Card 3D tilt interaction delegated automatically
+                let activeTiltCard = null;
+                let activeTiltRect = null;
+
+                document.addEventListener('mouseover', (e) => {
+                    const card = e.target.closest('.stat-card');
+                    if (card) {
+                        activeTiltCard = card;
+                        activeTiltRect = card.getBoundingClientRect();
+                        card.style.transformStyle = 'preserve-3d';
+                        card.style.perspective = '1000px';
+                    }
+                });
+
+                document.addEventListener('mouseout', (e) => {
+                    const card = e.target.closest('.stat-card');
+                    if (card && card === activeTiltCard) {
+                        card.style.transform = '';
+                        activeTiltCard = null;
+                        activeTiltRect = null;
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (activeTiltCard && activeTiltRect) {
+                        const rect = activeTiltRect;
+                        const cardCenterX = rect.left + rect.width / 2;
+                        const cardCenterY = rect.top + rect.height / 2;
+                        
+                        const rotateX = -(e.clientY - cardCenterY) / (rect.height / 2) * 8;
+                        const rotateY = (e.clientX - cardCenterX) / (rect.width / 2) * 10;
+                        
+                        activeTiltCard.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.04)';
+                    }
+                });
+
+                // 20. Primary loop tick
+                function loop() {
+                    ctx.fillStyle = '#05070f';
+                    ctx.globalAlpha = 0.28;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.globalAlpha = 1;
+
+                    rippleCtx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+
+                    if (mouse.isMoving) {
+                        mouse.x += (mouse.targetX - mouse.x) * 0.1;
+                        mouse.y += (mouse.targetY - mouse.y) * 0.1;
+                    } else {
+                        mouse.x = -1000;
+                        mouse.y = -1000;
+                    }
+
+                    if (mouse.x > 0) {
+                        for (let x = 0; x < cols; x++) {
+                            for (let y = 0; y < rows; y++) {
+                                const idx = x + y * cols;
+                                const cellX = x * fieldResolution;
+                                const cellY = y * fieldResolution;
+                                
+                                const dx = mouse.x - cellX;
+                                const dy = mouse.y - cellY;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                
+                                if (dist < 320) {
+                                    const angle = Math.atan2(dy, dx) + Math.PI/2;
+                                    const force = (320 - dist) / 320;
+                                    
+                                    flowField[idx].x = Math.cos(angle) * force * 1.5;
+                                    flowField[idx].y = Math.sin(angle) * force * 1.5;
+                                    flowField[idx].strength = 1.6;
+                                } else {
+                                    flowField[idx].x += (Math.cos(x * 0.15) * 0.2 - flowField[idx].x) * 0.05;
+                                    flowField[idx].y += (Math.sin(y * 0.15) * 0.2 - flowField[idx].y) * 0.05;
+                                    flowField[idx].strength += (0.8 - flowField[idx].strength) * 0.05;
+                                }
+                            }
+                        }
+                    }
+
+                    particles.forEach(p => { p.update(); p.draw(); });
+                    
+                    for (let i = ripples.length - 1; i >= 0; i--) {
+                        if (ripples[i].update()) {
+                            ripples[i].draw();
+                        } else {
+                            ripples.splice(i, 1);
+                        }
+                    }
+
+                    updateHUD();
+
+                    if (window.quantumBgAnimationFrame) {
+                        cancelAnimationFrame(window.quantumBgAnimationFrame);
+                    }
+                    window.quantumBgAnimationFrame = requestAnimationFrame(loop);
+                }
+                
+                if (window.quantumBgAnimationFrame) {
+                    cancelAnimationFrame(window.quantumBgAnimationFrame);
+                }
+                loop();
+            })();
+        }
+    " style="display:none;">
+    """,
+    unsafe_allow_html=True
+)
+
 # Helper function for confidence rating conversions
 def _get_conf_val(c: dict) -> int:
     confidence = c.get("confidence", 0)
@@ -1137,10 +1968,11 @@ if selected_tab == "Overview":
 
             suggestion_block = ""
             if suggestion:
+                formatted_suggestion = suggestion.replace('\\n', '<br/>').replace('\n', '<br/>')
                 suggestion_block = f"""
                 <div class="finding-suggestion-box">
                     <strong>💡 Suggestion:</strong><br/>
-                    {suggestion.replace('\\n', '<br/>').replace('\n', '<br/>')}
+                    {formatted_suggestion}
                 </div>
                 """
                 
