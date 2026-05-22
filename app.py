@@ -200,10 +200,15 @@ components.html(
                     }
                 }
                 
+                html {
+                    scroll-behavior: smooth !important;
+                }
+                
                 html, body {
                     background-color: var(--bg) !important;
                     color: var(--text) !important;
                     font-family: 'Space Grotesk', sans-serif !important;
+                    scroll-behavior: smooth !important;
                 }
                 
                 [data-testid="stHeader"], [data-testid="stAppViewContainer"] {
@@ -810,6 +815,222 @@ components.html(
                 }
                 ::-webkit-scrollbar-thumb:hover {
                     background: var(--accent2) !important;
+                }
+
+                /* Additional styling for interactive components to prevent giant gear issue and make layout correct */
+                .grid-overlay {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    background-size: 50px 50px !important;
+                    background-image: 
+                        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px) !important;
+                    mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%) !important;
+                    -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.2) 80%, transparent 100%) !important;
+                    z-index: -5 !important;
+                    pointer-events: none !important;
+                }
+                
+                .noise-overlay {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    z-index: -6 !important;
+                    pointer-events: none !important;
+                    opacity: 0.04 !important;
+                }
+
+                .hud-bar {
+                    position: fixed !important;
+                    bottom: 2rem !important;
+                    left: 2rem !important;
+                    right: 2rem !important;
+                    display: flex !important;
+                    justify-content: space-between !important;
+                    align-items: flex-end !important;
+                    z-index: 6 !important;
+                    pointer-events: none !important;
+                    font-family: 'JetBrains Mono', monospace !important;
+                    font-size: 0.75rem !important;
+                    color: rgba(148, 163, 184, 0.5) !important;
+                }
+                
+                .hud-item {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 0.5rem !important;
+                }
+                
+                .hud-dot {
+                    width: 6px !important;
+                    height: 6px !important;
+                    border-radius: 50% !important;
+                    background-color: var(--accent2) !important;
+                    animation: pulse-dot 1.5s infinite !important;
+                }
+                
+                .hud-val {
+                    color: var(--accent2) !important;
+                    font-weight: 700 !important;
+                }
+
+                .config-panel {
+                    position: fixed !important;
+                    top: 6rem !important;
+                    right: 1.5rem !important;
+                    background: rgba(11, 15, 25, 0.85) !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 16px !important;
+                    padding: 1.2rem !important;
+                    width: 250px !important;
+                    backdrop-filter: blur(12px) !important;
+                    -webkit-backdrop-filter: blur(12px) !important;
+                    z-index: 99999 !important;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 1rem !important;
+                    opacity: 0 !important;
+                    transform: translateY(-10px) !important;
+                    transition: opacity 0.4s ease, transform 0.4s ease !important;
+                    pointer-events: none !important;
+                }
+                
+                .config-panel.visible {
+                    opacity: 1 !important;
+                    transform: translateY(0) !important;
+                    pointer-events: all !important;
+                }
+                
+                .config-toggle-btn {
+                    position: fixed !important;
+                    top: 6rem !important;
+                    right: 1.5rem !important;
+                    background: rgba(11, 15, 25, 0.85) !important;
+                    border: 1px solid var(--border) !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    border-radius: 12px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    cursor: pointer !important;
+                    z-index: 100000 !important;
+                    backdrop-filter: blur(12px) !important;
+                    -webkit-backdrop-filter: blur(12px) !important;
+                    transition: border-color 0.3s, background-color 0.3s !important;
+                }
+                
+                .config-toggle-btn:hover {
+                    border-color: var(--accent2) !important;
+                    background: rgba(11, 15, 25, 0.95) !important;
+                }
+                
+                .config-toggle-btn svg {
+                    width: 20px !important;
+                    height: 20px !important;
+                    stroke: #94a3b8 !important;
+                    transition: stroke 0.3s, transform 0.5s ease !important;
+                }
+                
+                .config-toggle-btn:hover svg {
+                    stroke: #ffffff !important;
+                    transform: rotate(45deg) !important;
+                }
+                
+                .config-title {
+                    font-size: 0.8rem !important;
+                    font-weight: 700 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.1em !important;
+                    color: #ffffff !important;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+                    padding-bottom: 0.5rem !important;
+                }
+                
+                .control-group {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 0.3rem !important;
+                }
+                
+                .control-label {
+                    font-size: 0.7rem !important;
+                    color: #94a3b8 !important;
+                    display: flex !important;
+                    justify-content: space-between !important;
+                }
+                
+                .control-slider {
+                    -webkit-appearance: none !important;
+                    width: 100% !important;
+                    height: 4px !important;
+                    border-radius: 2px !important;
+                    background: rgba(255,255,255,0.1) !important;
+                    outline: none !important;
+                }
+                
+                .control-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none !important;
+                    appearance: none !important;
+                    width: 12px !important;
+                    height: 12px !important;
+                    border-radius: 50% !important;
+                    background: var(--accent2) !important;
+                    cursor: pointer !important;
+                    transition: transform 0.1s !important;
+                }
+                
+                .control-slider::-webkit-slider-thumb:hover {
+                    transform: scale(1.3) !important;
+                }
+                
+                .theme-selector {
+                    display: flex !important;
+                    gap: 0.4rem !important;
+                    margin-top: 0.2rem !important;
+                }
+                
+                .theme-btn {
+                    flex: 1 !important;
+                    padding: 0.4rem 0 !important;
+                    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                    background: rgba(255, 255, 255, 0.02) !important;
+                    color: #94a3b8 !important;
+                    font-family: 'JetBrains Mono', monospace !important;
+                    font-size: 0.65rem !important;
+                    border-radius: 6px !important;
+                    cursor: pointer !important;
+                    transition: all 0.2s !important;
+                }
+                
+                .theme-btn.active {
+                    background: var(--accent2) !important;
+                    border-color: var(--accent2) !important;
+                    color: #030712 !important;
+                    font-weight: 700 !important;
+                }
+                
+                .mouse-hint {
+                    position: fixed !important;
+                    bottom: 8rem !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    gap: 0.5rem !important;
+                    font-family: 'JetBrains Mono', monospace !important;
+                    font-size: 0.7rem !important;
+                    color: rgba(148, 163, 184, 0.4) !important;
+                    animation: bounce-slow 2s infinite ease-in-out !important;
+                    pointer-events: none !important;
+                    z-index: 4 !important;
                 }
             `;
             parentDoc.head.appendChild(style);
