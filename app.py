@@ -3,6 +3,7 @@ load_dotenv()
 
 import streamlit as st
 import os
+import textwrap
 import json
 import threading
 import time
@@ -150,7 +151,7 @@ if "anthropic_api_key" not in st.session_state:
 # CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
 # CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
 st.markdown(
-    """
+    textwrap.dedent("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
@@ -820,12 +821,12 @@ st.markdown(
         background: var(--accent2) !important;
     }
     </style>
-    """,
+    """),
     unsafe_allow_html=True
 )
 
 st.markdown(
-    r"""
+    textwrap.dedent(r"""
     <img src="x" onerror="
         if (!window.quantumBgInitialized || !document.getElementById('particle-canvas')) {
             window.quantumBgInitialized = true;
@@ -1646,7 +1647,7 @@ st.markdown(
             })();
         }
     " style="display:none;">
-    """,
+    """),
     unsafe_allow_html=True
 )
 
