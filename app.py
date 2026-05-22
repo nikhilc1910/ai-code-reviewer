@@ -845,7 +845,30 @@ selected_tab = st.sidebar.radio(
 # --- SIDEBAR RUN FORM ---
 st.sidebar.divider()
 st.sidebar.subheader("🚀 Run Review")
-repo_url = st.sidebar.text_input("GitHub Repository URL", placeholder="https://github.com/user/repo", label_visibility="collapsed")
+
+preset_repo = st.sidebar.selectbox(
+    "Quick Test Presets",
+    options=[
+        "",
+        "https://github.com/pypa/sampleproject",
+        "https://github.com/octocat/Hello-World",
+        "https://github.com/pallets/flask/tree/main/examples/tutorial",
+        "https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps",
+        "https://github.com/vercel/ms"
+    ],
+    format_func=lambda x: {
+        "": "💡 Select a quick preset...",
+        "https://github.com/pypa/sampleproject": "Best Overall (Sample Project)",
+        "https://github.com/octocat/Hello-World": "Tiny Python (Hello World)",
+        "https://github.com/pallets/flask/tree/main/examples/tutorial": "Small Flask App",
+        "https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps": "Small FastAPI App",
+        "https://github.com/vercel/ms": "JavaScript Utility (ms)"
+    }.get(x, x),
+    label_visibility="collapsed"
+)
+
+default_repo = preset_repo if preset_repo else ""
+repo_url = st.sidebar.text_input("GitHub Repository URL", value=default_repo, placeholder="https://github.com/user/repo", label_visibility="collapsed")
 run_btn = st.sidebar.button("RUN NEW REVIEW ↗", type="primary", use_container_width=True)
 
 # --- SIDEBAR FILTERS ---

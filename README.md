@@ -126,6 +126,20 @@ Launch the Streamlit web dashboard locally:
 streamlit run app.py
 ```
 
+### 7. Dry Running with Preset Repositories
+To test the application quickly, we have provided a set of diverse preset repositories. You can either select these from the "Quick Test Presets" dropdown menu in the sidebar of the live dashboard to autofill the URL, or copy and paste them directly:
+
+* **Best Overall Test Repo**: `https://github.com/pypa/sampleproject`
+  * *Perfect for*: Smoke testing, UI demo, and fast review generation.
+* **Tiny Python Repo**: `https://github.com/octocat/Hello-World`
+  * *Perfect for*: Extremely small codebase and near-instant review generation.
+* **Small Flask App**: `https://github.com/pallets/flask/tree/main/examples/tutorial`
+  * *Perfect for*: Realistic security, performance, and coding style findings.
+* **Small FastAPI Repo**: `https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps`
+  * *Perfect for*: Testing reviews on a modern Python framework environment.
+* **JavaScript Small Repo**: `https://github.com/vercel/ms`
+  * *Perfect for*: Checking line-based chunk reviewing on JavaScript source files.
+
 ---
 
 ## 🧪 Verification & Testing Suite
