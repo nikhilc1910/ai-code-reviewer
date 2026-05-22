@@ -183,15 +183,18 @@ st.markdown(
         }
     }
     
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+    html, body {
         background-color: var(--bg) !important;
         color: var(--text) !important;
         font-family: 'Space Grotesk', sans-serif !important;
-        position: relative;
     }
     
-    /* Subtle tech grid background and scanline overlay all over the deployed project */
-    [data-testid="stAppViewContainer"]::before {
+    [data-testid="stHeader"], [data-testid="stAppViewContainer"] {
+        background-color: transparent !important;
+    }
+    
+    /* Subtle tech grid background and scanline overlay on body */
+    body::before {
         content: "";
         position: fixed;
         top: 0;
@@ -204,10 +207,10 @@ st.markdown(
         background-size: 40px 40px;
         background-position: center;
         pointer-events: none;
-        z-index: -2; /* Send to back so it doesn't overlap text */
+        z-index: -2;
     }
     
-    [data-testid="stAppViewContainer"]::after {
+    body::after {
         content: "";
         position: fixed;
         top: 0;
@@ -223,7 +226,7 @@ st.markdown(
         background-size: 100% 200%;
         animation: techScanline 12s linear infinite;
         pointer-events: none;
-        z-index: -1; /* Send to back so it doesn't overlap text */
+        z-index: -1;
     }
     
     @keyframes techScanline {
@@ -308,8 +311,8 @@ st.markdown(
         color: var(--text) !important;
     }
     
-    /* Hide the radio button circle indicators in the sidebar navigation completely (robust sibling filters) */
-    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label > *:not([data-testid="stMarkdownContainer"]) {
+    /* Hide the radio button circle indicators in the sidebar navigation completely (first-child targets the circle wrapper) */
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label > *:first-child {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
