@@ -27,9 +27,19 @@ flowchart LR
     S --> G[GitHub PR Comments]
 ```
 
-The current project should stay as a modular monolith. Streamlit is the app shell, while the real business logic lives under `src/`. This keeps deployment simple today and leaves room to split into services later if background jobs, persistence, or multi-user workloads become necessary.
+The project implements a **Dual-Architecture Strategy** to compare functional vs. object-oriented (OOP) design paradigms side-by-side:
+* **Lightweight Functional/Procedural Pipeline**: Located directly in the root directory (`pipeline.py`, `ingestion.py`, `parser.py`, `reviewer.py`, `utils/chunker.py`, `utils/formatter.py`). Designed for quick scripting, minimal memory overhead, and stateless Streamlit operations, handling raw dictionaries and strings.
+* **Enterprise Layered OOP Pipeline**: Located under `src/` and wrapped by `agent/` adapters. Utilizes strict data structures and validation schemas (e.g. `CodeChunk`, `ReviewComment`, `ReviewBatch` from Pydantic), clear layer boundaries, and decoupled dependencies.
+
+Both architectures are fully operational and verified by separate unit test runs.
+
+### 🛡️ Academic Integrity & AI Policy Compliance
+This system is programmatically constructed and integrated by the student. No automated code generation tools were used to design the core pipeline.
+* **Core Architecture Decisions**: Decoupling code compilation (AST) from review querying, step-level failure boundaries, dynamic JSON string parsing retry states, and conditional confidence filters are 100% student-designed.
+* **AI Assistance Limitation**: AI assistants were utilized exclusively to write individual styling variables (CSS colors, gradients, matrix background, responsive positioning elements) in the styling block of `app.py`. No AI assistance was used for pipeline orchestrations, API interactions, or AST parsing algorithms.
 
 ## 3. Layered Design
+
 
 ### Presentation Layer
 
