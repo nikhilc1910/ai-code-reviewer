@@ -148,6 +148,7 @@ if "anthropic_api_key" not in st.session_state:
     st.session_state["anthropic_api_key"] = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
+# CSS Styling for Premium Aesthetics (CodeLens AI styling based on visual mockups)
 st.markdown(
     """
     <style>
@@ -161,18 +162,129 @@ st.markdown(
         --accent: #3b82f6;
         --accent2: #06b6d4;
         --text: #f1f5f9;
-        --muted: #64748b;
+        --muted: #94a3b8;
         --critical: #f87171;
         --major: #fb923c;
         --minor: #facc15;
         --success: #4ade80;
     }
     
-    /* Base backgrounds & fonts */
+    /* Base backgrounds & fonts with tech fade slide-in animation */
+    @keyframes techSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+            filter: blur(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+    
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background-color: var(--bg) !important;
         color: var(--text) !important;
         font-family: 'Space Grotesk', sans-serif !important;
+        position: relative;
+    }
+    
+    /* Subtle tech grid background and scanline overlay all over the deployed project */
+    [data-testid="stAppViewContainer"]::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image: 
+            linear-gradient(rgba(6, 182, 212, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(6, 182, 212, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: center;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    [data-testid="stAppViewContainer"]::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(
+            to bottom,
+            rgba(6, 182, 212, 0) 0%,
+            rgba(6, 182, 212, 0.03) 10%,
+            rgba(6, 182, 212, 0) 20%
+        );
+        background-size: 100% 200%;
+        animation: techScanline 12s linear infinite;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    @keyframes techScanline {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 0% 200%; }
+    }
+    
+    [data-testid="stAppViewContainer"] {
+        animation: techSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    /* Global visibility overrides for captions, titles, sidebar items, and controls to eliminate dark-on-dark text */
+    [data-testid="stSidebar"] p, 
+    [data-testid="stSidebar"] span, 
+    [data-testid="stSidebar"] label, 
+    [data-testid="stSidebar"] div,
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
+    [data-testid="stSidebar"] [class*="stCaption"],
+    [data-testid="stSidebar"] [class*="stCaption"] *,
+    [data-testid="stSidebar"] caption {
+        color: #cbd5e1 !important;
+    }
+    
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4,
+    [data-testid="stSidebar"] h5,
+    [data-testid="stSidebar"] strong {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    
+    [data-testid="stSidebar"] div[data-testid="stCaptionContainer"] p,
+    [data-testid="stSidebar"] [class*="stCaption"] p {
+        color: #94a3b8 !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Header top-bar button and icon visibility fixes (e.g. Share, Star, Edit, Github icons) */
+    header[data-testid="stHeader"] button,
+    header[data-testid="stHeader"] a,
+    header[data-testid="stHeader"] svg,
+    header[data-testid="stHeader"] svg *,
+    header[data-testid="stHeader"] button *,
+    header[data-testid="stHeader"] a *,
+    header[data-testid="stHeader"] span,
+    header[data-testid="stHeader"] div {
+        color: #cbd5e1 !important;
+        fill: #cbd5e1 !important;
+        stroke: #cbd5e1 !important;
+        transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease !important;
+    }
+    header[data-testid="stHeader"] button:hover *,
+    header[data-testid="stHeader"] a:hover *,
+    header[data-testid="stHeader"] button:hover,
+    header[data-testid="stHeader"] a:hover {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
     }
     
     /* Code and details use JetBrains Mono */
@@ -195,16 +307,20 @@ st.markdown(
         color: var(--text) !important;
     }
     
-    /* Hide the radio button circle indicators in the sidebar navigation */
-    div[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+    /* Hide the radio button circle indicators in the sidebar navigation completely (robust sibling filters) */
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label > *:not([data-testid="stMarkdownContainer"]) {
         display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
     }
     
     /* Sidebar radio button styling transformed into custom navigation tabs */
-    div[data-testid="stSidebar"] div[role="radiogroup"] {
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] {
         gap: 0.5rem;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label {
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label {
         background: transparent !important;
         border: 1px solid transparent !important;
         padding: 0.7rem 1rem !important;
@@ -212,28 +328,39 @@ st.markdown(
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, border-color 0.25s ease !important;
         cursor: pointer !important;
         display: flex !important;
+        align-items: center !important;
         transform-origin: left center;
     }
     
     /* Fix text contrast & hover-zoom in left column navigation tabs */
-    div[data-testid="stSidebar"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] *,
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
         color: #94a3b8 !important; /* light grey unselected */
         font-weight: 500 !important;
-        transition: color 0.2s ease-in-out, transform 0.2s ease-in-out !important;
+        font-size: 1.05rem !important;
+        transition: color 0.25s ease-in-out, transform 0.25s ease-in-out !important;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover {
         background: rgba(255, 255, 255, 0.03) !important;
         border-color: rgba(99, 179, 237, 0.1) !important;
-        transform: scale(1.04) !important;
+        transform: scale(1.05) !important;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] p {
+    
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] *,
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:hover [data-testid="stMarkdownContainer"] {
         color: #ffffff !important; /* white on hover */
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] {
+    
+    /* Modern bulletproof selected tab selector using :has() */
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {
         background: rgba(59, 130, 246, 0.1) !important;
         border: 1px solid rgba(59, 130, 246, 0.25) !important;
+        box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
     }
-    div[data-testid="stSidebar"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
+    
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] *,
+    [data-testid="stSidebar"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] {
         color: var(--accent2) !important; /* bright cyan when selected */
         font-weight: 700 !important;
     }
@@ -249,11 +376,20 @@ st.markdown(
         color: var(--text) !important;
         border: 1px solid var(--border) !important;
         border-radius: 8px !important;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+    }
+    
+    /* Input field focus glow tech animations */
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stSelectbox"] div[data-baseweb="select"]:focus,
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"]:focus {
+        border-color: var(--accent2) !important;
+        box-shadow: 0 0 12px rgba(6, 182, 212, 0.25) !important;
     }
     
     /* Input placeholder styling */
     div[data-testid="stTextInput"] input::placeholder {
-        color: var(--muted) !important;
+        color: #64748b !important;
     }
     
     /* Multiselect tags styling */
@@ -349,7 +485,7 @@ st.markdown(
         border-color: var(--accent2) !important;
     }
     
-    /* Custom Stat Cards styling with hover-zoom transitions */
+    /* Custom Stat Cards styling with hover-zoom & tech scanline sweep transitions */
     .stat-card {
         background: var(--glass);
         border: 1px solid var(--border);
@@ -359,15 +495,47 @@ st.markdown(
         position: relative;
         overflow: hidden;
     }
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(6, 182, 212, 0.08) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: skewX(-25deg);
+        transition: 0.75s;
+    }
+    .stat-card:hover::after {
+        left: 120%;
+    }
     .stat-card:hover {
         border-color: var(--accent) !important;
         transform: scale(1.04) !important;
         box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2) !important;
         z-index: 2;
     }
+    @keyframes neonBorderGlow {
+        0% {
+            border-color: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
+        }
+        50% {
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.25);
+        }
+        100% {
+            border-color: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.05);
+        }
+    }
     .stat-glow {
-        border-color: rgba(6, 182, 212, 0.3);
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.08);
+        animation: neonBorderGlow 3s infinite ease-in-out !important;
     }
     .stat-card-title {
         color: var(--muted);
@@ -388,6 +556,12 @@ st.markdown(
         font-family: 'Space Grotesk', sans-serif;
         font-size: 1.9rem;
         font-weight: 700;
+        transition: transform 0.2s ease, color 0.2s ease !important;
+    }
+    .stat-card:hover .stat-card-value {
+        color: var(--accent2) !important;
+        transform: scale(1.05) !important;
+        display: inline-block;
     }
     .stat-card-emoji {
         font-size: 1.4rem;
@@ -397,7 +571,7 @@ st.markdown(
         font-weight: 500;
     }
     
-    /* Interactive HTML findings accordion panel with hover-zoom */
+    /* Interactive HTML findings accordion panel with hover-zoom and scanline sweep */
     details.finding-detail-box {
         background: var(--glass);
         border: 1px solid var(--border);
@@ -405,6 +579,27 @@ st.markdown(
         margin-bottom: 0.8rem;
         padding: 0.85rem 1.1rem;
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
+        position: relative;
+        overflow: hidden;
+    }
+    details.finding-detail-box::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(59, 130, 246, 0.05) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: skewX(-25deg);
+        transition: 0.6s;
+    }
+    details.finding-detail-box:hover::after {
+        left: 120%;
     }
     details.finding-detail-box:hover {
         border-color: rgba(6, 182, 212, 0.4) !important;
@@ -439,6 +634,14 @@ st.markdown(
         font-weight: 700;
         font-size: 0.9rem;
     }
+    
+    /* Severity badge pulse animations */
+    @keyframes badgePulse {
+        0% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0); }
+    }
+    
     .finding-severity-badge {
         padding: 2px 8px;
         border-radius: 4px;
@@ -455,6 +658,7 @@ st.markdown(
         background: rgba(248, 113, 113, 0.12);
         color: var(--critical);
         border: 1px solid rgba(248, 113, 113, 0.25);
+        animation: badgePulse 2s infinite !important;
     }
     .sev-major {
         background: rgba(251, 146, 60, 0.12);
@@ -471,6 +675,8 @@ st.markdown(
         color: var(--success);
         border: 1px solid rgba(74, 222, 128, 0.25);
     }
+    
+    /* Hover effects for important findings text */
     .finding-title {
         color: var(--text);
         font-size: 0.95rem;
@@ -478,11 +684,34 @@ st.markdown(
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        transition: transform 0.25s ease, color 0.25s ease, padding-left 0.25s ease !important;
+        position: relative;
     }
+    .finding-title::before {
+        content: ">";
+        color: var(--accent2);
+        opacity: 0;
+        position: absolute;
+        left: -15px;
+        transition: opacity 0.25s ease, left 0.25s ease !important;
+    }
+    .finding-title:hover {
+        color: var(--accent2) !important;
+        padding-left: 15px !important;
+    }
+    .finding-title:hover::before {
+        opacity: 1;
+        left: 0;
+    }
+    
     .finding-line {
         color: var(--muted);
         font-size: 0.8rem;
         margin-left: 5px;
+        transition: color 0.2s ease !important;
+    }
+    .finding-line:hover {
+        color: #ffffff !important;
     }
     .finding-summary-right {
         display: flex;
@@ -556,6 +785,7 @@ st.markdown(
         transform: scale(1.03) !important;
         color: var(--accent2) !important;
     }
+    
     .sidebar-logo-container {
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         display: inline-block;
