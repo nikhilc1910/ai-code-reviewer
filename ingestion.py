@@ -1,6 +1,6 @@
 """GitHub repository ingestion module.
 
-Clones a repository using GitPython, parses .py and .js files, and cleans up.
+Clones a repository using GitPython, parses .py, .js, .ts, and .tsx files, and cleans up.
 """
 
 import os
@@ -18,11 +18,25 @@ from git.exc import GitCommandError
 logger = logging.getLogger(__name__)
 
 
+def _strip_tree_path(url: str) -> str:
+    """Strip a GitHub /tree/<branch>/... path segment, returning the repo root URL.
+
+    Example:
+        https://github.com/fastapi/fastapi/tree/master/docs_src
+        → https://github.com/fastapi/fastapi
+    """
+    match = re.search(r"(https?://github\.com/[^/]+/[^/]+)/tree/.*", url, re.IGNORECASE)
+    if match:
+        return match.group(1)
+    return url
+
 
 def validate_github_url(url: str) -> bool:
     """Validate if the given string is a valid GitHub repository URL.
 
     Supports HTTPS, HTTP, and SSH formats, with or without .git suffix.
+    Also accepts /tree/<branch>/... subdirectory URLs — the tree path is
+    stripped automatically before cloning.
     """
     if not isinstance(url, str):
         return False
@@ -40,7 +54,6 @@ def validate_github_url(url: str) -> bool:
         return bool(re.match(pattern, url, re.IGNORECASE))
 
     # HTTP/HTTPS/git protocol formats
-    # e.g., https://github.com/owner/repo or github.com/owner/repo
     parsed = urlparse(url)
     path = parsed.path
     if not parsed.scheme:
@@ -52,7 +65,7 @@ def validate_github_url(url: str) -> bool:
 
     if "github.com" in parts:
         idx = parts.index("github.com")
-        subparts = parts[idx + 1 :]
+        subparts = parts[idx + 1:]
     else:
         subparts = parts
 
@@ -69,161 +82,139 @@ def remove_readonly(func, path, excinfo):
         pass
 
 
-def ingest_repository(github_url: str, max_files: int = 20) -> list[dict]:
-    """Clones a GitHub repository, walks it for .py and .js files, and cleans up.
+def _walk_repo_files(temp_dir: str, max_files: int) -> list[dict]:
+    """Walk a cloned repository and collect .py, .js, .ts, and .tsx files.
 
     Args:
-        github_url: The URL of the GitHub repository.
+        temp_dir: Path to the cloned repository root.
+        max_files: Maximum number of files to return.
 
     Returns:
-        A list of dicts: {"path": str, "language": "python"|"javascript", "content": str}
+        A list of dicts: {"path": str, "language": str, "content": str}
+    """
+    results = []
+    skip_dirs = {"node_modules", ".venv", "__pycache__", ".git"}
+    temp_path = Path(temp_dir)
+
+    for root, dirs, files in os.walk(temp_dir):
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
+
+        for file in files:
+            file_path = Path(root) / file
+            ext = file_path.suffix.lower()
+
+            if ext == ".py":
+                language = "python"
+            elif ext == ".js":
+                language = "javascript"
+            elif ext in (".ts", ".tsx"):
+                language = "typescript"
+            else:
+                continue
+
+            # Get path relative to repository root, using forward slashes
+            rel_path = file_path.relative_to(temp_path).as_posix()
+
+            try:
+                content = file_path.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                content = ""
+
+            results.append({
+                "path": rel_path,
+                "language": language,
+                "content": content,
+            })
+
+    if len(results) > max_files:
+        logger.warning("Limiting to %d files for performance", max_files)
+        results = results[:max_files]
+
+    return results
+
+
+def ingest_repository(github_url: str, max_files: int = 20) -> list[dict]:
+    """Clones a GitHub repository, walks it for source files, and cleans up.
+
+    Args:
+        github_url: The URL of the GitHub repository. Accepts repo root URLs or
+            /tree/<branch>/... subdirectory URLs — the tree path is stripped
+            automatically so git clone receives a valid repo root URL.
+        max_files: Maximum number of files to return.
+
+    Returns:
+        A list of dicts: {"path": str, "language": "python"|"javascript"|"typescript", "content": str}
 
     Raises:
         ValueError: If the URL is invalid or the clone fails.
     """
     if not validate_github_url(github_url):
         raise ValueError(f"Invalid GitHub URL: '{github_url}'")
-    
-    github_url = github_url.strip().rstrip("/").removesuffix(".git")
-    
+
+    github_url = _strip_tree_path(github_url.strip().rstrip("/")).removesuffix(".git")
+
     temp_dir = tempfile.mkdtemp(prefix="git_ingest_")
     repo = None
 
     try:
-        # Clone the repository (using depth=1 for shallow clone)
         repo = git.Repo.clone_from(github_url, temp_dir, depth=1)
     except Exception as e:
-        # Ensure cleanup on clone failure
         shutil.rmtree(temp_dir, onerror=remove_readonly)
         raise ValueError(f"Failed to clone repository: {e}") from e
 
     try:
-        results = []
-        skip_dirs = {"node_modules", ".venv", "__pycache__", ".git"}
-        temp_path = Path(temp_dir)
-
-        # Recursively walk the repository
-        for root, dirs, files in os.walk(temp_dir):
-            # Modify dirs in-place to skip specific folders
-            dirs[:] = [d for d in dirs if d not in skip_dirs]
-
-            for file in files:
-                file_path = Path(root) / file
-                ext = file_path.suffix.lower()
-
-                if ext == ".py":
-                    language = "python"
-                elif ext == ".js":
-                    language = "javascript"
-                else:
-                    continue
-
-                # Get path relative to repository root, using forward slashes
-                rel_path = file_path.relative_to(temp_path).as_posix()
-
-                try:
-                    # Read the file content with UTF-8, replacing invalid bytes
-                    content = file_path.read_text(encoding="utf-8", errors="replace")
-                except Exception:
-                    # Fallback if file reading fails
-                    content = ""
-
-                results.append({
-                    "path": rel_path,
-                    "language": language,
-                    "content": content
-                })
-
-        if len(results) > max_files:
-            logger.warning("Limiting to 20 files for performance")
-            results = results[:max_files]
-
-        return results
-
+        return _walk_repo_files(temp_dir, max_files)
     finally:
-        # Always clean up the temp directory, ensuring file handles are closed
         if repo is not None:
             try:
                 repo.close()
             except Exception:
                 pass
-
         try:
             git.Git().clear_cache()
         except Exception:
             pass
-
         shutil.rmtree(temp_dir, onerror=remove_readonly)
 
 
 # Alias to support simpler imports if requested
 ingest = ingest_repository
 
+
 def clone_repo(github_url: str, max_files: int = 20) -> tuple[list[dict], str]:
-    """Clones a GitHub repository, walks it for .py and .js files, and returns (results, temp_dir).
+    """Clones a GitHub repository, walks it for source files, and returns (results, temp_dir).
 
     The caller is responsible for deleting temp_dir.
+
+    Args:
+        github_url: The URL of the GitHub repository. Accepts repo root URLs or
+            /tree/<branch>/... subdirectory URLs — the tree path is stripped
+            automatically so git clone receives a valid repo root URL.
+        max_files: Maximum number of files to return.
+
+    Returns:
+        A tuple of (file list, temp_dir path).
+
+    Raises:
+        ValueError: If the URL is invalid or the clone fails.
     """
     if not validate_github_url(github_url):
         raise ValueError(f"Invalid GitHub URL: '{github_url}'")
-    
-    github_url = github_url.strip().rstrip("/").removesuffix(".git")
-    
+
+    github_url = _strip_tree_path(github_url.strip().rstrip("/")).removesuffix(".git")
+
     temp_dir = tempfile.mkdtemp(prefix="git_ingest_")
     repo = None
 
     try:
-        # Clone the repository (using depth=1 for shallow clone)
         repo = git.Repo.clone_from(github_url, temp_dir, depth=1)
-        
-        results = []
-        skip_dirs = {"node_modules", ".venv", "__pycache__", ".git"}
-        temp_path = Path(temp_dir)
-
-        # Recursively walk the repository
-        for root, dirs, files in os.walk(temp_dir):
-            # Modify dirs in-place to skip specific folders
-            dirs[:] = [d for d in dirs if d not in skip_dirs]
-
-            for file in files:
-                file_path = Path(root) / file
-                ext = file_path.suffix.lower()
-
-                if ext == ".py":
-                    language = "python"
-                elif ext == ".js":
-                    language = "javascript"
-                else:
-                    continue
-
-                # Get path relative to repository root, using forward slashes
-                rel_path = file_path.relative_to(temp_path).as_posix()
-
-                try:
-                    # Read the file content with UTF-8, replacing invalid bytes
-                    content = file_path.read_text(encoding="utf-8", errors="replace")
-                except Exception:
-                    # Fallback if file reading fails
-                    content = ""
-
-                results.append({
-                    "path": rel_path,
-                    "language": language,
-                    "content": content
-                })
-
-        if len(results) > max_files:
-            logger.warning("Limiting to 20 files for performance")
-            results = results[:max_files]
-
+        results = _walk_repo_files(temp_dir, max_files)
         return results, temp_dir
 
     except Exception as e:
-        # Ensure cleanup on clone failure
         shutil.rmtree(temp_dir, onerror=remove_readonly)
         raise ValueError(f"Failed to clone repository: {e}") from e
     finally:
-        # Close the repo reference if open
         if repo is not None:
             try:
                 repo.close()
@@ -233,4 +224,3 @@ def clone_repo(github_url: str, max_files: int = 20) -> tuple[list[dict], str]:
             git.Git().clear_cache()
         except Exception:
             pass
-

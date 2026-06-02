@@ -129,25 +129,24 @@ def parse_source(source_code: str) -> dict[str, list[Any]]:
     }
 
 
-def parse_file(file_path: Union[str, Path]) -> dict[str, list[Any]]:
-    """Read a Python file and extract functions, classes, and imports.
+def parse_file(path: Union[str, Path]) -> dict[str, list[Any]]:
+    """Read a Python file from disk and extract functions, classes, and imports.
 
-    If file_path doesn't exist, is invalid, or represents raw content,
-    falls back to parsing the string as raw source code.
+    Use this when you have a file path on disk. To parse raw source code
+    directly (e.g. content already loaded into a string), call parse_source()
+    instead.
+
+    Args:
+        path: Path to a Python source file.
+
+    Returns:
+        Parsed AST data dict, or an empty structure if the file cannot be read.
     """
     try:
-        path = Path(file_path)
-        if path.is_file():
-            source_code = path.read_text(encoding="utf-8", errors="replace")
-            return parse_source(source_code)
+        return parse_source(Path(path).read_text(encoding="utf-8", errors="replace"))
     except Exception:
-        pass
-
-    # If it is not a file or reading failed, treat the input directly as raw source code
-    if isinstance(file_path, (str, Path)):
-        return parse_source(str(file_path))
-    return {
-        "functions": [],
-        "classes": [],
-        "imports": [],
-    }
+        return {
+            "functions": [],
+            "classes": [],
+            "imports": [],
+        }
