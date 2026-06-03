@@ -8,7 +8,9 @@ import json
 import threading
 import time
 from pipeline import run_pipeline
+from utils.progress import PipelineProgress
 from utils.formatter import comments_to_markdown, comments_to_json
+
 
 # Set page config
 st.set_page_config(layout="wide", page_icon="🤖", page_title="CodeLens AI - Review Agent")
@@ -1603,14 +1605,16 @@ if run_btn:
 
         with st.status("Analyzing codebase repository...", expanded=True) as status:
             progress_bar = st.progress(0.0)
+            progress_container = st.empty()
             
+            progress = PipelineProgress()
             results = []
             errors = []
             
             def thread_target():
                 try:
                     # Execute pipeline
-                    comments = run_pipeline(repo_url.strip())
+                    comments = run_pipeline(repo_url.strip(), progress=progress)
                     results.append(comments)
                 except Exception as e:
                     errors.append(e)
@@ -1619,23 +1623,59 @@ if run_btn:
             t = threading.Thread(target=thread_target, daemon=True)
             t.start()
 
-            steps = [
-                ("Cloning codebase files...", 0.2),
-                ("Constructing abstract syntax trees...", 0.4),
-                ("Extracting AST nodes and chunking modules...", 0.6),
-                ("Submitting code blocks to LLM Reviewer...", 0.8),
-                ("Assembling findings report...", 0.9),
-            ]
+            stage_pcts = {
+                "cloning": 0.1,
+                "discovery": 0.2,
+                "parsing": 0.4,
+                "dependencies": 0.5,
+                "chunking": 0.6,
+                "static_analysis": 0.7,
+                "review": 0.85,
+                "aggregation": 0.95,
+                "assembly": 0.98
+            }
 
-            start_time = time.time()
             while t.is_alive():
-                elapsed = time.time() - start_time
-                step_idx = min(int(elapsed / 2.0), len(steps) - 1)
-                step_msg, step_pct = steps[step_idx]
-                
-                status.update(label=step_msg)
-                progress_bar.progress(step_pct)
-                time.sleep(0.1)
+                with progress.lock:
+                    active_stage = None
+                    for stage in progress.stages:
+                        if progress.stage_status[stage] == "running":
+                            active_stage = stage
+                            break
+                    if not active_stage:
+                        for stage in reversed(progress.stages):
+                            if progress.stage_status[stage] in ("completed", "failed"):
+                                active_stage = stage
+                                break
+                    
+                    if active_stage:
+                        msg = progress.stage_messages.get(active_stage, f"Processing {active_stage}...")
+                        pct = stage_pcts.get(active_stage, 0.0)
+                        if active_stage == "review" and progress.total_chunks > 0:
+                            review_pct = progress.reviewed_chunks / progress.total_chunks
+                            pct = 0.7 + (0.15 * review_pct)
+                            msg = f"Reviewing code blocks... ({progress.reviewed_chunks}/{progress.total_chunks} chunks)"
+                        
+                        status.update(label=msg)
+                        progress_bar.progress(pct)
+                        
+                        progress_text = ""
+                        for stage in progress.stages:
+                            status_val = progress.stage_status[stage]
+                            emoji = "⏳"
+                            if status_val == "completed":
+                                emoji = "✅"
+                            elif status_val == "failed":
+                                emoji = "❌"
+                            elif status_val == "running":
+                                emoji = "🚀"
+                            
+                            stage_label = stage.replace("_", " ").title()
+                            duration_str = f" ({progress.stage_durations[stage]:.2f}s)" if progress.stage_durations[stage] > 0 else ""
+                            progress_text += f"{emoji} **{stage_label}**: {progress.stage_messages[stage]}{duration_str}\n\n"
+                        
+                        progress_container.markdown(progress_text)
+                time.sleep(0.2)
 
             t.join()
 
@@ -1753,6 +1793,25 @@ if selected_tab == "Overview":
     render_card(s2, "Critical Issues", critical_count, "+3% need verification", "var(--major)", "🔥")
     render_card(s3, "Security Issues", security_count, "-5% resolved", "var(--accent2)", "🛡️")
     render_card(s4, "Avg Confidence", f"{avg_confidence}%", "+0.8% accuracy rate", "var(--success)", "🧠")
+
+    # 3.5. TIMING METRICS (if available)
+    if hasattr(comments, "timing_metrics") and comments.timing_metrics:
+        st.markdown('<div style="margin-top: 25px;"></div>', unsafe_allow_html=True)
+        with st.expander("⏱️ Pipeline Execution Metrics", expanded=False):
+            t_col1, t_col2 = st.columns(2)
+            metrics_dict = comments.timing_metrics
+            with t_col1:
+                st.markdown(f"**Clone/Fetch Time:** {metrics_dict.get('Clone Time', '0.00s')}")
+                st.markdown(f"**File Discovery:** {metrics_dict.get('Discovery Time', '0.00s')}")
+                st.markdown(f"**AST Node Parsing:** {metrics_dict.get('Parse Time', '0.00s')}")
+                st.markdown(f"**Dependency Resolution:** {metrics_dict.get('Dependencies Time', '0.00s')}")
+                st.markdown(f"**Chunking Blocks:** {metrics_dict.get('Chunking Time', '0.00s')}")
+            with t_col2:
+                st.markdown(f"**Static Analysis:** {metrics_dict.get('Static Analysis Time', '0.00s')}")
+                st.markdown(f"**LLM Review Engine:** {metrics_dict.get('Review Time', '0.00s')}")
+                st.markdown(f"**Findings Aggregation:** {metrics_dict.get('Aggregation Time', '0.00s')}")
+                st.markdown(f"**Report Assembly:** {metrics_dict.get('Assembly Time', '0.00s')}")
+                st.markdown(f"**Total Scan Duration:** `{metrics_dict.get('Total Time', '0.00s')}`")
 
     st.markdown('<div style="margin-top: 35px;"></div>', unsafe_allow_html=True)
     st.markdown('<div style="font-size: 1.4rem; font-weight: 700; font-family:\'Space Grotesk\', sans-serif; margin-bottom:15px;">Code Review Findings</div>', unsafe_allow_html=True)

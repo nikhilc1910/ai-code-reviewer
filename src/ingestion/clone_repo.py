@@ -72,13 +72,28 @@ def clone_repository(
 
     target_dir.mkdir(parents=True, exist_ok=True)
 
+    import os
+    old_terminal_prompt = os.environ.get("GIT_TERMINAL_PROMPT")
+    old_askpass = os.environ.get("GIT_ASKPASS")
     try:
+        os.environ["GIT_TERMINAL_PROMPT"] = "0"
+        os.environ["GIT_ASKPASS"] = "echo"
+        
         kwargs: dict = {"depth": depth}
         if branch:
             kwargs["branch"] = branch
         Repo.clone_from(normalized, str(clone_path), **kwargs)
     except GitCommandError as e:
         raise CloneError(f"Failed to clone repository: {e}") from e
+    finally:
+        if old_terminal_prompt is not None:
+            os.environ["GIT_TERMINAL_PROMPT"] = old_terminal_prompt
+        else:
+            os.environ.pop("GIT_TERMINAL_PROMPT", None)
+        if old_askpass is not None:
+            os.environ["GIT_ASKPASS"] = old_askpass
+        else:
+            os.environ.pop("GIT_ASKPASS", None)
 
     if not (clone_path / ".git").exists():
         raise CloneError(f"Clone succeeded but .git not found at {clone_path}")

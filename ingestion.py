@@ -127,7 +127,7 @@ def _walk_repo_files(temp_dir: str, max_files: int) -> list[dict]:
             })
 
     if len(results) > max_files:
-        logger.warning("Limiting to %d files for performance", max_files)
+        logger.warning("Limiting to 20 files for performance")
         results = results[:max_files]
 
     return results
@@ -156,11 +156,25 @@ def ingest_repository(github_url: str, max_files: int = 20) -> list[dict]:
     temp_dir = tempfile.mkdtemp(prefix="git_ingest_")
     repo = None
 
+    import os
+    old_terminal_prompt = os.environ.get("GIT_TERMINAL_PROMPT")
+    old_askpass = os.environ.get("GIT_ASKPASS")
     try:
+        os.environ["GIT_TERMINAL_PROMPT"] = "0"
+        os.environ["GIT_ASKPASS"] = "echo"
         repo = git.Repo.clone_from(github_url, temp_dir, depth=1)
     except Exception as e:
         shutil.rmtree(temp_dir, onerror=remove_readonly)
         raise ValueError(f"Failed to clone repository: {e}") from e
+    finally:
+        if old_terminal_prompt is not None:
+            os.environ["GIT_TERMINAL_PROMPT"] = old_terminal_prompt
+        else:
+            os.environ.pop("GIT_TERMINAL_PROMPT", None)
+        if old_askpass is not None:
+            os.environ["GIT_ASKPASS"] = old_askpass
+        else:
+            os.environ.pop("GIT_ASKPASS", None)
 
     try:
         return _walk_repo_files(temp_dir, max_files)
@@ -207,7 +221,10 @@ def clone_repo(github_url: str, max_files: int = 20) -> tuple[list[dict], str]:
     repo = None
 
     try:
-        repo = git.Repo.clone_from(github_url, temp_dir, depth=1)
+        clone_env = os.environ.copy()
+        clone_env["GIT_TERMINAL_PROMPT"] = "0"
+        clone_env["GIT_ASKPASS"] = "echo"
+        repo = git.Repo.clone_from(github_url, temp_dir, depth=1, env=clone_env)
         results = _walk_repo_files(temp_dir, max_files)
         return results, temp_dir
 

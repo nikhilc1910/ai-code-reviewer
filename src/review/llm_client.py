@@ -103,6 +103,7 @@ class LLMReviewer:
             ],
             temperature=0.2,
             response_format={"type": "json_object"},
+            timeout=30.0,
         )
         return response.choices[0].message.content or "{}"
 
@@ -123,6 +124,7 @@ class LLMReviewer:
             system=SYSTEM_PROMPT + "\nRespond with JSON only.",
             messages=[{"role": "user", "content": user_prompt}],
             temperature=0.2,
+            timeout=30.0,
         )
         parts = [b.text for b in response.content if hasattr(b, "text")]
         return "".join(parts) or "{}"

@@ -137,7 +137,7 @@ def _validate_comment(comment: dict[str, Any]) -> dict[str, Any]:
 
 
 def _call_openai(code_chunk: str, model: str) -> str:
-    """Call the OpenAI Chat Completion API."""
+    """Call the OpenAI Chat Completion API with timeout."""
     from openai import OpenAI
     
     api_key = os.getenv("OPENAI_API_KEY")
@@ -153,12 +153,13 @@ def _call_openai(code_chunk: str, model: str) -> str:
         ],
         temperature=0.2,
         response_format={"type": "json_object"},
+        timeout=30.0,
     )
     return response.choices[0].message.content or "{}"
 
 
 def _call_groq(user_message: str, model: str) -> str:
-    """Call Groq API (OpenAI-compatible endpoint)."""
+    """Call Groq API (OpenAI-compatible endpoint) with timeout."""
     try:
         from openai import OpenAI as _OpenAI
     except ImportError as exc:
@@ -180,6 +181,7 @@ def _call_groq(user_message: str, model: str) -> str:
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user",   "content": user_message},
             ],
+            timeout=30.0,
         )
     except Exception as exc:
         raise RuntimeError(f"Groq API error: {exc}") from exc
@@ -191,7 +193,7 @@ def _call_groq(user_message: str, model: str) -> str:
 
 
 def _call_anthropic(code_chunk: str, model: str) -> str:
-    """Call the Anthropic Messages API."""
+    """Call the Anthropic Messages API with timeout."""
     from anthropic import Anthropic
     
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -205,9 +207,49 @@ def _call_anthropic(code_chunk: str, model: str) -> str:
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": code_chunk}],
         temperature=0.2,
+        timeout=30.0,
     )
     parts = [b.text for b in response.content if hasattr(b, "text")]
     return "".join(parts) or "{}"
+
+
+def _call_with_timeout_and_retry(
+    call_llm_fn,
+    code_chunk: str,
+    model: str,
+    file_path: str,
+) -> str:
+    """Call call_llm_fn, retrying up to 3 times on ANY exceptions/timeouts.
+
+    Total 4 attempts (1 initial + 3 retries) with backoffs: 2s, 4s, 8s.
+    """
+    backoff = [2, 4, 8]
+    for attempt in range(len(backoff) + 1):
+        try:
+            return call_llm_fn(code_chunk, model)
+        except Exception as exc:
+            logger.error(
+                "LLM call failed (attempt %d/%d) for '%s': %s",
+                attempt + 1, len(backoff) + 1, file_path, exc,
+                exc_info=True
+            )
+            # Check for fatal errors that we should not retry (e.g. missing API key or Unauthorized)
+            msg = str(exc)
+            is_fatal = any(
+                p in msg for p in ("not set", "Unauthorized", "not installed", "unauthorized")
+            )
+            if is_fatal or attempt >= len(backoff):
+                raise RuntimeError(
+                    f"LLM API request failed: {exc}"
+                ) from exc
+
+            wait = backoff[attempt]
+            logger.warning(
+                "Retrying review for '%s' in %ds...",
+                file_path, wait
+            )
+            time.sleep(wait)
+    raise RuntimeError("Unexpected exit from retry loop")
 
 
 def review_code(code_chunk: str, file_path: str = "<unknown>") -> list[dict[str, Any]]:
@@ -256,7 +298,9 @@ def review_code(code_chunk: str, file_path: str = "<unknown>") -> list[dict[str,
     # 2. Call API & parse with a single retry on JSON parse failure
     for attempt in (1, 2):
         try:
-            response_text = call_llm(code_chunk, model)
+            response_text = _call_with_timeout_and_retry(
+                call_llm, code_chunk, model, file_path
+            )
             comments_data = _extract_json(response_text)
             raw_comments = comments_data.get("comments", [])
             
@@ -289,11 +333,11 @@ def review_code(code_chunk: str, file_path: str = "<unknown>") -> list[dict[str,
                 return []
                 
         except RuntimeError as e:
-            logger.error("API error occurred for '%s': %s. Failing fast.", file_path, e)
+            logger.error("API error occurred for '%s': %s. Failing fast.", file_path, e, exc_info=True)
             return []
             
         except Exception as e:
-            logger.error("Unexpected error during review for '%s': %s. Failing fast.", file_path, e)
+            logger.error("Unexpected error during review for '%s': %s. Failing fast.", file_path, e, exc_info=True)
             return []
 
     return []

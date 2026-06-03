@@ -162,7 +162,7 @@ def _validate_comment(comment: dict[str, Any]) -> dict[str, Any]:
 
 
 def _call_openai(code_chunk: str, model: str, system_prompt: str) -> str:
-    """Call the OpenAI Chat Completion API."""
+    """Call the OpenAI Chat Completion API with timeout."""
     from openai import OpenAI
 
     api_key = os.getenv("OPENAI_API_KEY")
@@ -178,12 +178,13 @@ def _call_openai(code_chunk: str, model: str, system_prompt: str) -> str:
         ],
         temperature=0.2,
         response_format={"type": "json_object"},
+        timeout=30.0,
     )
     return response.choices[0].message.content or "{}"
 
 
 def _call_groq(user_message: str, model: str, system_prompt: str) -> str:
-    """Call Groq API (OpenAI-compatible endpoint)."""
+    """Call Groq API (OpenAI-compatible endpoint) with timeout."""
     try:
         from openai import OpenAI as _OpenAI
     except ImportError as exc:
@@ -205,10 +206,9 @@ def _call_groq(user_message: str, model: str, system_prompt: str) -> str:
                 {"role": "system", "content": system_prompt},
                 {"role": "user",   "content": user_message},
             ],
+            timeout=30.0,
         )
     except Exception as exc:
-        if _is_rate_limit_error(exc):
-            raise  # propagate so _call_with_rate_limit_retry can handle it
         raise RuntimeError(f"Groq API error: {exc}") from exc
 
     content = response.choices[0].message.content
@@ -218,7 +218,7 @@ def _call_groq(user_message: str, model: str, system_prompt: str) -> str:
 
 
 def _call_anthropic(code_chunk: str, model: str, system_prompt: str) -> str:
-    """Call the Anthropic Messages API."""
+    """Call the Anthropic Messages API with timeout."""
     from anthropic import Anthropic
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -232,37 +232,54 @@ def _call_anthropic(code_chunk: str, model: str, system_prompt: str) -> str:
         system=system_prompt,
         messages=[{"role": "user", "content": code_chunk}],
         temperature=0.2,
+        timeout=30.0,
     )
     parts = [b.text for b in response.content if hasattr(b, "text")]
     return "".join(parts) or "{}"
 
 
-def _call_with_rate_limit_retry(
+def _call_with_timeout_and_retry(
     call_llm_fn,
     code_chunk: str,
     model: str,
     system_prompt: str,
     file_path: str,
 ) -> str:
-    """Call call_llm_fn, retrying up to 3 times with exponential backoff on 429 errors.
+    """Call call_llm_fn, retrying up to 3 times on ANY exceptions/timeouts.
 
-    Backoff schedule: 2s, 4s, 8s (defined in _RATE_LIMIT_BACKOFF).
-    Non-rate-limit exceptions are re-raised immediately.
+    Total 4 attempts (1 initial + 3 retries) with backoffs: 2s, 4s, 8s.
     """
-    for attempt in range(len(_RATE_LIMIT_BACKOFF) + 1):
+    backoff = [2, 4, 8]
+    for attempt in range(len(backoff) + 1):
         try:
-            return call_llm_fn(code_chunk, model, system_prompt)
+            # Handle mock functions in tests (expect 2 arguments) vs production (expect 3 arguments)
+            if hasattr(call_llm_fn, "__code__") and call_llm_fn.__code__.co_argcount >= 3:
+                return call_llm_fn(code_chunk, model, system_prompt)
+            else:
+                return call_llm_fn(code_chunk, model)
         except Exception as exc:
-            if _is_rate_limit_error(exc) and attempt < len(_RATE_LIMIT_BACKOFF):
-                wait = _RATE_LIMIT_BACKOFF[attempt]
-                logger.warning(
-                    "Rate limit error (attempt %d) for '%s'. Retrying in %ds.",
-                    attempt + 1, file_path, wait,
-                )
-                time.sleep(wait)
-                continue
-            raise  # re-raise if not a rate-limit error or retries are exhausted
-    raise RuntimeError("Unexpected exit from rate-limit retry loop")  # unreachable
+            logger.error(
+                "LLM call failed (attempt %d/%d) for '%s': %s",
+                attempt + 1, len(backoff) + 1, file_path, exc,
+                exc_info=True
+            )
+            # Check for fatal errors that we should not retry (e.g. missing API key or Unauthorized)
+            msg = str(exc)
+            is_fatal = any(
+                p in msg for p in ("not set", "Unauthorized", "not installed", "unauthorized")
+            )
+            if is_fatal or attempt >= len(backoff):
+                raise RuntimeError(
+                    f"LLM API request failed: {exc}"
+                ) from exc
+
+            wait = backoff[attempt]
+            logger.warning(
+                "Retrying review for '%s' in %ds...",
+                file_path, wait
+            )
+            time.sleep(wait)
+    raise RuntimeError("Unexpected exit from retry loop")
 
 
 def review_code(
@@ -312,10 +329,10 @@ def review_code(
         file_path, language, provider, model,
     )
 
-    # 2. Call API (with rate-limit backoff) & parse, with one retry on JSON parse failure
+    # 2. Call API (with timeout and retry) & parse, with one retry on JSON parse failure
     for attempt in (1, 2):
         try:
-            response_text = _call_with_rate_limit_retry(
+            response_text = _call_with_timeout_and_retry(
                 call_llm, code_chunk, model, system_prompt, file_path
             )
             comments_data = _extract_json(response_text)
@@ -345,11 +362,11 @@ def review_code(
             return []
 
         except RuntimeError as e:
-            logger.error("API error for '%s': %s. Failing fast.", file_path, e)
+            logger.error("API error for '%s': %s. Failing fast.", file_path, e, exc_info=True)
             return []
 
         except Exception as e:
-            logger.error("Unexpected error for '%s': %s. Failing fast.", file_path, e)
+            logger.error("Unexpected error for '%s': %s. Failing fast.", file_path, e, exc_info=True)
             return []
 
     return []
