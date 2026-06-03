@@ -165,18 +165,18 @@ streamlit run app.py
 ```
 
 ### 7. Dry Running with Preset Repositories
-To test the application quickly, we have provided a set of diverse preset repositories. You can either select these from the "Quick Test Presets" dropdown menu in the sidebar of the live dashboard to autofill the URL, or copy and paste them directly:
+To test the application quickly, you can select one of the following preset repositories from the **"Quick Test Presets"** dropdown menu in the sidebar of the live dashboard:
 
-* **Best Overall Test Repo**: `https://github.com/pypa/sampleproject`
-  * *Perfect for*: Smoke testing, UI demo, and fast review generation.
-* **Tiny Python Repo**: `https://github.com/octocat/Hello-World`
-  * *Perfect for*: Extremely small codebase and near-instant review generation.
+* **Best Overall (Sample Project)**: `https://github.com/pypa/sampleproject`
+  * *Perfect for*: Quick smoke testing, verifying standard review output, and general UI demo.
+* **Tiny Python (Hello World)**: `https://github.com/octocat/Hello-World`
+  * *Perfect for*: Checking minimal execution paths with near-instant analysis.
 * **Small Flask App**: `https://github.com/pallets/flask/tree/main/examples/tutorial`
-  * *Perfect for*: Realistic security, performance, and coding style findings.
-* **Small FastAPI Repo**: `https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps`
-  * *Perfect for*: Testing reviews on a modern Python framework environment.
-* **JavaScript Small Repo**: `https://github.com/vercel/ms`
-  * *Perfect for*: Checking line-based chunk reviewing on JavaScript source files.
+  * *Perfect for*: Reviewing Flask patterns, database operations, and directory structure.
+* **Small FastAPI App**: `https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps`
+  * *Perfect for*: Assessing modern asynchronous endpoints and Python typing constraints.
+* **JavaScript Utility (ms)**: `https://github.com/vercel/ms`
+  * *Perfect for*: Testing line-based parsing on non-Python repositories.
 
 ---
 
