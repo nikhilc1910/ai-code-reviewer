@@ -1,4 +1,4 @@
-# 🤖 CodeLens AI: Autonomous AST-Aware Code Reviewer
+# CodeLens AI: AST-Aware Automated Code Reviewer
 
 <div align="center">
 
@@ -9,7 +9,7 @@
 
 <h3>⚡ Try the Live Review Dashboard & Showcase Website ⚡</h3>
 
-Scan public GitHub repositories instantly in the web dashboard, or explore the professional showcase.
+Scan public GitHub repositories instantly in the web dashboard, or explore the showcase page.
 
 👉 **[Launch AI Code Reviewer Dashboard](https://ai-code-reviewer-vtktnacbukrw87589atwck.streamlit.app/)** 👈
 
@@ -20,21 +20,21 @@ Scan public GitHub repositories instantly in the web dashboard, or explore the p
 ---
 
 > [!NOTE]
-> ### 🌐 Developer Showcase: Sentinel Complete Site
-> Check out the developer's full portfolio, landing page, and project showcase at **[Sentinel Complete Site](https://sentinel-complete-site--nikhil19102004.replit.app/)**. Experience the futuristic product presentation designed to highlight core capabilities, workflows, and integrations.
+> ### 🌐 Developer Showcase: Sentinel Project Website
+> View the live project showcase and portfolio at **[Sentinel Website](https://sentinel-complete-site--nikhil19102004.replit.app/)**. This page showcases the product context, workflows, and integration examples.
 > 
 > *⚠️ Disclaimer: This portfolio site is temporarily hosted on Replit and will remain active until **June 20, 2026**. Please visit the site before then to inspect the design showcase.*
 
 <div align="center">
   <img src="assets/sentinel_landing.jpg" alt="Sentinel Landing Page Screenshot" width="850" style="border-radius:12px; border:1px solid rgba(99, 179, 237, 0.2); box-shadow:0 12px 40px rgba(0,0,0,0.4);" />
-  <p><i>Figure 1: The Sentinel Product Landing Page - Professional product presentation</i></p>
+  <p><i>Figure 1: The Sentinel Product Landing Page - Project Showcase</i></p>
 </div>
 
 ## 📋 Project Overview
 
-**CodeLens AI** (commercially branded as **Sentinel**) is an autonomous repository analysis agent that automates python and javascript/typescript code reviews. The agent clones public GitHub repositories, builds Abstract Syntax Tree (AST) representations of Python source code, groups them into logical class and function-level chunks, runs deep LLM review iterations using state-of-the-art models (Groq, OpenAI, Anthropic), and produces confidence-rated, schema-validated review findings.
+**CodeLens AI** (branded as **Sentinel**) is a code review tool for Python and JavaScript/TypeScript repositories. The tool clones public GitHub codebases, extracts Abstract Syntax Tree (AST) representations for Python files, segments code into logical blocks, executes review passes via LLM endpoints (Groq, OpenAI, Anthropic), and generates structured, schema-validated findings.
 
-The twist of CodeLens AI is its **interactive confidence scoring mechanism**. Every review finding is returned with a self-assessed confidence rating. The dashboard automatically filters, groups, and tags findings:
+A key feature of the tool is its **interactive confidence scoring system**. Every review finding is generated with an LLM self-assessed confidence rating. The dashboard automatically filters and buckets these findings:
 * **High Confidence (>= 50%)**: Displayed on the main review panel with progress indicators.
 * **Low Confidence (< 50%)**: Segmented into a warning drawer ("Needs Verification") to alert developers that manual verification is needed before acting on the suggestion.
 
@@ -42,7 +42,7 @@ The twist of CodeLens AI is its **interactive confidence scoring mechanism**. Ev
 
 ## 🖥️ Interactive Review Dashboard
 
-To make review exploration seamless, CodeLens AI features a cyberpunk-themed Streamlit dashboard:
+CodeLens AI includes a Streamlit dashboard interface for browsing findings:
 
 <div align="center">
   <img src="assets/dashboard_screenshot.png" alt="CodeLens AI Review Dashboard" width="850" style="border-radius:12px; border:1px solid rgba(6, 182, 212, 0.2); box-shadow:0 12px 40px rgba(0,0,0,0.4);" />
@@ -50,13 +50,13 @@ To make review exploration seamless, CodeLens AI features a cyberpunk-themed Str
 </div>
 
 > [!NOTE]
-> **Real-Time Code Analysis**: The dashboard displays key metrics (Total, Critical, and Security Issues along with Average Confidence) and breaks down finding details in real time. It uses a custom confidence-rating filter so that you can focus on high-confidence insights or inspect lower-confidence findings in a separate drawer.
+> **Interactive Findings Explorer**: The dashboard aggregates key metrics (Total, Critical, and Security Issues, Average Confidence) and displays finding details. A confidence-rating slider allows filtering out low-confidence findings or reviewing them separately.
 
 ---
 
 ## 🏗️ System Architecture
 
-CodeLens AI utilizes a modular pipelined architecture to execute AST-guided reviews.
+CodeLens AI uses a modular pipeline to process repositories and execute reviews.
 
 ```mermaid
 graph TD
@@ -65,7 +65,7 @@ graph TD
     AST --> Chunker[utils/chunker.py<br/>Context-Aware Node Chunker]
     Chunker --> Reviewer[reviewer.py<br/>LLM JSON Schema API Call]
     Reviewer --> Formatter[utils/formatter.py<br/>Markdown & JSON Reports]
-    Formatter --> UI[app.py<br/>Streamlit Cyberpunk UI]
+    Formatter --> UI[app.py<br/>Streamlit UI]
     
     style URL fill:#0b0f19,stroke:#06b6d4,stroke-width:2px,color:#fff
     style Ingestion fill:#0e1220,stroke:#3b82f6,stroke-width:1px,color:#fff
@@ -77,22 +77,22 @@ graph TD
 ```
 
 ### Module Descriptions
-1. **Repository Ingestion (`ingestion.py`)**: Clones the public repository to a local temporary directory, traverses files, filters source extensions (Python, JavaScript), and limits file count and sizes to prevent runtime overhead.
-2. **AST Parser (`parser.py`)**: Compiles Python source code into a programmatic Abstract Syntax Tree, cataloging classes, functions, and import references.
-3. **Context Chunker (`utils/chunker.py`)**: Slices the parser's AST classes and functions into token-efficient text chunks so that each LLM query has exact structural context without exceeding API token limits.
-4. **LLM Reviewer (`reviewer.py`)**: Submits the code chunks to the configured LLM API (Groq, OpenAI, Anthropic) using a system prompt that mandates strict JSON output conforming to our custom schema.
-5. **Dashboard UI (`app.py`)**: Renders a visually premium Streamlit web app themed with grid overlays, scrolling scanlines, glowing metric cards, interactive details draw-downs, and a live codebase file explorer.
+1. **Repository Ingestion (`ingestion.py`)**: Clones the target repository to a local temporary directory, filters supported extensions (Python, JavaScript), and limits the file count to prevent resource exhaustion.
+2. **AST Parser (`parser.py`)**: Parses Python files into an Abstract Syntax Tree to identify functional definitions (classes, methods, imports).
+3. **Context Chunker (`utils/chunker.py`)**: Slices files into token-efficient text chunks mapping to logical AST boundaries to stay within LLM context limits.
+4. **LLM Reviewer (`reviewer.py`)**: Submits code chunks to the LLM (Groq, OpenAI, Anthropic) using prompts that enforce strict JSON output matching the target schema.
+5. **Dashboard UI (`app.py`)**: A Streamlit web interface displaying findings, files, metrics, and logs.
 
 ---
 
 ## 🧠 Design Decisions & Engineering Tradeoffs
 
-A key highlight of CodeLens AI's engineering is its deliberate architecture. Below is a breakdown of why these core design choices were made:
+Below is a breakdown of the core design choices made during development:
 
 ### 1. Why AST Parsing?
 Instead of treating codebases as raw, flat text files (which leads to unstructured reviews), CodeLens AI compiles Python files into an **Abstract Syntax Tree (AST)** using Python's built-in `ast` module.
-* **Structural Context**: Parsing the AST allows the agent to programmatically distinguish between classes, helper functions, and decorator imports.
-* **Targeted Analysis**: Rather than sending irrelevant boilerplate or configuration blocks to the LLM, the parser isolates only functional code nodes. This helps the review agent locate line numbers, docstrings, and signature patterns with absolute mathematical precision.
+* **Structural Context**: Parsing the AST allows the tool to programmatically distinguish between classes, helper functions, and decorator imports.
+* **Targeted Analysis**: Rather than sending irrelevant boilerplate or configuration blocks to the LLM, the parser isolates only functional code nodes. This helps the review agent accurately locate line numbers, docstrings, and functional signatures.
 
 ### 2. Why Chunking?
 Large source files can easily exceed LLM token limits or cause the model to suffer from "loss-in-the-middle" context window dilution. CodeLens AI uses AST-guided **context-aware chunking**:
@@ -100,14 +100,14 @@ Large source files can easily exceed LLM token limits or cause the model to suff
 * **Precise Mapping**: Because the chunks align directly with individual AST nodes, we can deterministically map review comments back to the exact code units (e.g. methods) where they belong, keeping the UI metrics clean.
 
 ### 3. Why Confidence Scoring?
-LLMs are notoriously prone to hallucinations, especially when performing niche code quality reviews. CodeLens AI implements a **schema-enforced self-assessed confidence score** (0 to 100):
-* **Noise Mitigation**: Every review comment returned is categorized and graded by the LLM. 
-* **User Experience (UX)**: High-confidence findings ($\ge 50\%$) are displayed as primary action items in the main dashboard. Low-confidence suggestions ($< 50\%$) are hidden inside a "Needs Verification" expander, preventing developer alert fatigue and keeping the signal-to-noise ratio high.
+Self-assessed confidence scoring filters out lower-confidence observations and reduces false positives:
+* **Noise Mitigation**: The LLM assigns a confidence score to each generated review comment.
+* **Developer Experience**: High-confidence findings ($\ge 50\%$) are displayed as primary items. Lower-confidence suggestions are grouped in a "Needs Verification" section to minimize alert fatigue.
 
 ### 4. Why Static Analysis Before LLM?
 CodeLens AI runs a fast syntax parsing and local AST compilation pass *prior* to initiating LLM API queries:
 * **Immediate Fail-Fast**: If a source file is corrupted, has syntax errors, or cannot be parsed, the system captures the parse error locally without wasting API tokens or causing LLM request timeouts.
-* **Contextual Enrichment**: Extracting imports and function signatures statically allows us to inject meta-context into the LLM system prompt. The model is primed with the structural framework of the file beforehand, allowing it to perform a much deeper semantic analysis.
+* **Contextual Enrichment**: Extracting imports and function signatures statically allows us to inject meta-context into the LLM system prompt. The model is provided with the structural framework of the file, enabling more contextual code analysis.
 
 ---
 
@@ -182,7 +182,7 @@ To test the application quickly, you can select one of the following preset repo
 
 ## 🧪 Verification & Testing Suite
 
-CodeLens AI includes a robust suite of tests to verify pipeline operations before deployment.
+CodeLens AI includes a suite of tests to verify pipeline operations before deployment.
 
 ### Run Unit Tests
 To run unit tests for chunking, parser, ingestion, and reviewer modules:
@@ -270,7 +270,7 @@ Open a **Pull Request** on the main repository describing your feature, findings
 
 ## 📁 Repository Structure & Architectural Representation
 
-This project features a dual pipeline layout designed to compare side-by-side design paradigms:
+This repository contains two pipeline implementations to compare different software design paradigms:
 1. **Lightweight Functional/Procedural Pipeline** (Directly in root): Optimized for simplicity, performance, and immediate execution, direct dictionary transformations, and integration with the Streamlit frontend.
 2. **Enterprise Layered OOP Pipeline** (Under `src/` & `agent/` adapters): Built with structured domain data contracts (Pydantic models), formal type signatures, dependency injection, and clean modular decoupling.
 
@@ -287,7 +287,7 @@ ai-code-reviewer/
 │   ├── pipeline.py             # Adapter importing and exposing src.pipeline coordinates
 │   └── reviewer.py             # Adapter importing and exposing src.review components
 ├── assets/                     # Graphic resources and screenshots
-│   ├── dashboard_mockup.png    # Cyberpunk Streamlit UI showcase reference
+│   ├── dashboard_mockup.png    # Streamlit UI showcase reference
 │   └── sentinel_landing.jpg    # Sentinel complete showcase website screenshot
 ├── tests/                      # Python Testing Suite (Pytest framework)
 │   ├── test_chunker_module.py  # Unit tests for AST grouping and formatting logic
@@ -319,5 +319,3 @@ All third-party testing source codes and repositories utilized during developmen
 * **Flask App Tutorial (Pallets)**: `https://github.com/pallets/flask/tree/main/examples/tutorial` (Flask database application example used to verify security and code-style findings).
 * **FastAPI Docs (FastAPI)**: `https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps` (Used to evaluate FastAPI source structures).
 * **MS Javascript Utility (Vercel)**: `https://github.com/vercel/ms` (Used to check raw line-based chunk boundaries for non-Python repositories).
-
-
