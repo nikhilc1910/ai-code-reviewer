@@ -104,6 +104,49 @@ CodeLens AI runs a fast syntax parsing and local AST compilation pass *prior* to
 * **Immediate Fail-Fast**: If a source file is corrupted, has syntax errors, or cannot be parsed, the system captures the parse error locally without wasting API tokens or causing LLM request timeouts.
 * **Contextual Enrichment**: Extracting imports and function signatures statically allows us to inject meta-context into the LLM system prompt. The model is provided with the structural framework of the file, enabling more contextual code analysis.
 
+## 📊 Project Progress
+
+| Feature | Status | Progress |
+|----------|----------|----------|
+| Repository Cloning | ✅ | 100% |
+| AST Parsing | ✅ | 100% |
+| Code Chunking | ✅ | 100% |
+| Groq Integration | ✅ | 100% |
+| Confidence Scoring | ✅ | 100% |
+| Dashboard UI | ✅ | 95% |
+| Unit Testing | ✅ | 95% |
+| Gemini Support | 🚧 | 60% |
+| Review Caching | 🚧 | 20% |
+| Static Analysis | 🚧 | 30% |
+
+## 📈 Development Roadmap
+
+```mermaid
+gantt
+    title CodeLens AI Development Roadmap
+    dateFormat YYYY-MM-DD
+
+    section Core Engine
+    Repository Ingestion :done, a1, 2026-05-01, 3d
+    AST Parsing :done, a2, after a1, 4d
+    Chunking Pipeline :done, a3, after a2, 3d
+
+    section AI Review
+    Groq Integration :done, a4, after a3, 3d
+    Confidence Scoring :done, a5, after a4, 2d
+
+    section Dashboard
+    Streamlit UI :done, a6, after a5, 4d
+    Findings Visualization :done, a7, after a6, 3d
+
+    section Future Work
+    Gemini Integration :active, a8, after a7, 4d
+    Cache Layer :a9, after a8, 3d
+    Static Analysis Engine :a10, after a9, 5d
+```
+
+---
+
 ## Setup & Installation
 
 Follow these steps to run the CodeLens AI developer environment locally:
