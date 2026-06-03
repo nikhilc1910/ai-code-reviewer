@@ -1538,17 +1538,13 @@ preset_repo = st.sidebar.selectbox(
     options=[
         "",
         "https://github.com/pypa/sampleproject",
-        "https://github.com/octocat/Hello-World",
-        "https://github.com/pallets/flask/tree/main/examples/tutorial",
-        "https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps",
+        "https://github.com/kennethreitz/dj-database-url",
         "https://github.com/vercel/ms"
     ],
     format_func=lambda x: {
         "": "💡 Select a quick preset...",
         "https://github.com/pypa/sampleproject": "Best Overall (Sample Project)",
-        "https://github.com/octocat/Hello-World": "Tiny Python (Hello World)",
-        "https://github.com/pallets/flask/tree/main/examples/tutorial": "Small Flask App",
-        "https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps": "Small FastAPI App",
+        "https://github.com/kennethreitz/dj-database-url": "Tiny Python (dj-database-url)",
         "https://github.com/vercel/ms": "JavaScript Utility (ms)"
     }.get(x, x),
     label_visibility="collapsed"

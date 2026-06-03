@@ -169,12 +169,8 @@ To test the application quickly, you can select one of the following preset repo
 
 * **Best Overall (Sample Project)**: `https://github.com/pypa/sampleproject`
   * *Perfect for*: Quick smoke testing, verifying standard review output, and general UI demo.
-* **Tiny Python (Hello World)**: `https://github.com/octocat/Hello-World`
-  * *Perfect for*: Checking minimal execution paths with near-instant analysis.
-* **Small Flask App**: `https://github.com/pallets/flask/tree/main/examples/tutorial`
-  * *Perfect for*: Reviewing Flask patterns, database operations, and directory structure.
-* **Small FastAPI App**: `https://github.com/fastapi/fastapi/tree/master/docs_src/first_steps`
-  * *Perfect for*: Assessing modern asynchronous endpoints and Python typing constraints.
+* **Tiny Python (dj-database-url)**: `https://github.com/kennethreitz/dj-database-url`
+  * *Perfect for*: Checking minimal execution paths on a real, single-file Python database utility with near-instant analysis.
 * **JavaScript Utility (ms)**: `https://github.com/vercel/ms`
   * *Perfect for*: Testing line-based parsing on non-Python repositories.
 
