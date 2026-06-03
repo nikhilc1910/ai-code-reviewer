@@ -85,6 +85,32 @@ graph TD
 
 ---
 
+## 🧠 Design Decisions & Engineering Tradeoffs
+
+A key highlight of CodeLens AI's engineering is its deliberate architecture. Below is a breakdown of why these core design choices were made:
+
+### 1. Why AST Parsing?
+Instead of treating codebases as raw, flat text files (which leads to unstructured reviews), CodeLens AI compiles Python files into an **Abstract Syntax Tree (AST)** using Python's built-in `ast` module.
+* **Structural Context**: Parsing the AST allows the agent to programmatically distinguish between classes, helper functions, and decorator imports.
+* **Targeted Analysis**: Rather than sending irrelevant boilerplate or configuration blocks to the LLM, the parser isolates only functional code nodes. This helps the review agent locate line numbers, docstrings, and signature patterns with absolute mathematical precision.
+
+### 2. Why Chunking?
+Large source files can easily exceed LLM token limits or cause the model to suffer from "loss-in-the-middle" context window dilution. CodeLens AI uses AST-guided **context-aware chunking**:
+* **Token Efficiency**: Slicing the AST into class-level and function-level chunks minimizes prompt size, ensuring the agent only reviews one logical unit of code at a time.
+* **Precise Mapping**: Because the chunks align directly with individual AST nodes, we can deterministically map review comments back to the exact code units (e.g. methods) where they belong, keeping the UI metrics clean.
+
+### 3. Why Confidence Scoring?
+LLMs are notoriously prone to hallucinations, especially when performing niche code quality reviews. CodeLens AI implements a **schema-enforced self-assessed confidence score** (0 to 100):
+* **Noise Mitigation**: Every review comment returned is categorized and graded by the LLM. 
+* **User Experience (UX)**: High-confidence findings ($\ge 50\%$) are displayed as primary action items in the main dashboard. Low-confidence suggestions ($< 50\%$) are hidden inside a "Needs Verification" expander, preventing developer alert fatigue and keeping the signal-to-noise ratio high.
+
+### 4. Why Static Analysis Before LLM?
+CodeLens AI runs a fast syntax parsing and local AST compilation pass *prior* to initiating LLM API queries:
+* **Immediate Fail-Fast**: If a source file is corrupted, has syntax errors, or cannot be parsed, the system captures the parse error locally without wasting API tokens or causing LLM request timeouts.
+* **Contextual Enrichment**: Extracting imports and function signatures statically allows us to inject meta-context into the LLM system prompt. The model is primed with the structural framework of the file beforehand, allowing it to perform a much deeper semantic analysis.
+
+---
+
 ## ⚡ Setup & Installation
 
 Follow these steps to run the CodeLens AI developer environment locally:
