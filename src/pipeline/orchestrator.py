@@ -166,7 +166,7 @@ class ReviewPipeline:
                             progress.increment_reviewed()
                     return comments_list
 
-                all_comments = run_with_timeout(review_step, timeout=60.0)
+                all_comments = run_with_timeout(review_step, timeout=300.0)
                 progress.complete_stage("review", f"LLM review completed with {len(all_comments)} findings")
             except Exception as e:
                 progress.fail_stage("review", f"LLM review failed or timed out: {e}")

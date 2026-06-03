@@ -220,8 +220,10 @@ def run_pipeline(repo_url: str, max_workers: int = 4, progress: PipelineProgress
                         logger.error("LLM review execution error: %s", e)
             return review_comments
 
-        llm_findings = run_with_timeout(review_step, timeout=60.0)
+        llm_findings = run_with_timeout(review_step, timeout=300.0)
         progress.complete_stage("review", f"LLM review completed, generated {len(llm_findings)} code findings")
+        logger.info("[REVIEW] Complete")
+        print("[REVIEW] Complete", flush=True)
     except Exception as e:
         progress.fail_stage("review", f"LLM review failed or timed out: {e}")
         _cleanup_tmp(tmp_dir_to_clean)
@@ -229,6 +231,9 @@ def run_pipeline(repo_url: str, max_workers: int = 4, progress: PipelineProgress
 
     # Stage 8: Aggregation
     progress.start_stage("aggregation", "Deduplicating and filtering findings...")
+    logger.info("[AGGREGATION] Started")
+    print("[AGGREGATION] Started", flush=True)
+    agg_start = time.time()
     try:
         def aggregation_step():
             raw_findings = static_findings + llm_findings
@@ -241,6 +246,8 @@ def run_pipeline(repo_url: str, max_workers: int = 4, progress: PipelineProgress
 
         all_comments = run_with_timeout(aggregation_step, timeout=60.0)
         progress.complete_stage("aggregation", "Findings aggregated successfully")
+        logger.info("[AGGREGATION] Complete")
+        print(f"[AGGREGATION] Complete (duration: {time.time() - agg_start:.4f}s)", flush=True)
     except Exception as e:
         progress.fail_stage("aggregation", f"Aggregation failed: {e}")
         _cleanup_tmp(tmp_dir_to_clean)
@@ -248,6 +255,9 @@ def run_pipeline(repo_url: str, max_workers: int = 4, progress: PipelineProgress
 
     # Stage 9: Assembly
     progress.start_stage("assembly", "Sorting and assembling findings report...")
+    logger.info("[REPORT] Started")
+    print("[REPORT] Started", flush=True)
+    rep_start = time.time()
     try:
         def assembly_step():
             severity_order = {"critical": 0, "major": 1, "minor": 2, "info": 3}
@@ -286,6 +296,8 @@ def run_pipeline(repo_url: str, max_workers: int = 4, progress: PipelineProgress
 
         result_list = run_with_timeout(assembly_step, timeout=60.0)
         progress.complete_stage("assembly", "Report assembly complete")
+        logger.info("[REPORT] Complete")
+        print(f"[REPORT] Complete (duration: {time.time() - rep_start:.4f}s)", flush=True)
     except Exception as e:
         progress.fail_stage("assembly", f"Assembly failed: {e}")
         raise e

@@ -9,6 +9,12 @@ import threading
 import time
 import sys
 import importlib
+import logging
+
+logger = logging.getLogger("app")
+logger.info("[UI] Started")
+print("[UI] Started", flush=True)
+ui_start_time = time.time()
 
 # Force reload local modules to prevent Streamlit from using stale cached versions
 for mod in ["pipeline", "reviewer", "ingestion", "parser", "utils.progress", "utils.chunker", "agent.reviewer"]:
@@ -2157,3 +2163,6 @@ elif selected_tab == "API Docs":
         """,
         unsafe_allow_html=True
     )
+
+logger.info("[UI] Complete")
+print(f"[UI] Complete (duration: {time.time() - ui_start_time:.4f}s)", flush=True)

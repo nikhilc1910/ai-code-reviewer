@@ -32,9 +32,17 @@ def _extract_json(text: str) -> dict:
         raise
 
 
-def _parse_comments(raw: dict, chunk: CodeChunk) -> list[ReviewComment]:
+def _parse_comments(raw: dict | list, chunk: CodeChunk) -> list[ReviewComment]:
     comments: list[ReviewComment] = []
-    for item in raw.get("comments", []):
+    
+    if isinstance(raw, list):
+        raw_list = raw
+    elif isinstance(raw, dict):
+        raw_list = raw.get("comments", [])
+    else:
+        raw_list = []
+
+    for item in raw_list:
         try:
             line_start = int(item.get("line_start", chunk.line_start))
             line_end = item.get("line_end")

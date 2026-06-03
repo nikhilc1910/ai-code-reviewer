@@ -336,7 +336,12 @@ def review_code(
                 call_llm, code_chunk, model, system_prompt, file_path
             )
             comments_data = _extract_json(response_text)
-            raw_comments = comments_data.get("comments", [])
+            if isinstance(comments_data, list):
+                raw_comments = comments_data
+            elif isinstance(comments_data, dict):
+                raw_comments = comments_data.get("comments", [])
+            else:
+                raw_comments = []
 
             validated = []
             for c in raw_comments:
