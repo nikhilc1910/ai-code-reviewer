@@ -17,7 +17,7 @@ print("[UI] Started", flush=True)
 ui_start_time = time.time()
 
 # Force reload local modules to prevent Streamlit from using stale cached versions
-for mod in ["pipeline", "reviewer", "ingestion", "parser", "utils.progress", "utils.chunker", "agent.reviewer"]:
+for mod in ["pipeline", "reviewer", "ingestion", "parser", "utils.progress", "utils.chunker"]:
     if mod in sys.modules:
         try:
             importlib.reload(sys.modules[mod])
@@ -1563,7 +1563,13 @@ selected_cats = st.sidebar.multiselect(
     default=["bug", "security", "performance", "style", "maintainability"]
 )
 
-min_confidence = st.sidebar.slider("Min Confidence Rating", min_value=0, max_value=100, value=0)
+min_confidence = st.sidebar.slider(
+    "Min Confidence Rating",
+    min_value=0,
+    max_value=100,
+    value=0,
+    help="Confidence is self-assessed by the LLM based on issue certainty: 80-100% for definite bugs/security vulnerabilities, 60-79% for probable improvements, and <60% for warnings/suggestions requiring manual review."
+)
 
 # Mocked Filter parameters matching mockup design
 st.sidebar.selectbox("Date Range", options=["Last 7 Days", "Last 30 Days", "All Time"], disabled=True)

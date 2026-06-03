@@ -175,7 +175,7 @@ def run_all_steps():
         # STEP 5 — REVIEW
         try:
             print_header(5, "REVIEW")
-            from agent.reviewer import review_code
+            from reviewer import review_code
             
             if not all_chunks:
                 raise AssertionError("No chunks available from Step 4 to review.")
