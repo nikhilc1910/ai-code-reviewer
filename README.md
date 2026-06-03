@@ -200,10 +200,14 @@ python smoke_test.py
 
 ## ⚠️ Known Limitations
 
+Acknowledging system boundaries is crucial for production tools. CodeLens AI operates under the following engineering constraints:
+
+* **Static Analysis Only (No Dynamic Runtime)**: The agent analyzes the codebase statically. Dynamic runtime behaviors, race conditions, memory leaks, and runtime environment variable evaluations are not executed or profiled.
+* **Heuristic Confidence Scoring**: Confidence ratings are self-assessed heuristics provided by the LLM completion models. They can vary in consistency and are subject to model bias or occasional over-confidence.
+* **Required Human Verification**: Code review findings are advisory. Recommendations should not be auto-merged into production branches without manual developer verification and code review.
+* **Single-Repository Scope**: Multi-repository dependency mappings and inter-repository references are not supported; the analysis is strictly bounded to the context of the cloned workspace repository.
 * **AST Language Constraints**: Deep Abstract Syntax Tree node analysis is currently only implemented for **Python**. JavaScript and TypeScript files are ingested and chunked using line-based boundaries instead of language-specific AST tokens.
-* **Token Rate Limits**: Highly complex repositories containing hundreds of large files can occasionally trigger LLM rate limits. Use the sidebar category filters and size boundaries to reduce context load.
-* **LLM Bias**: Confidence scores are self-assessed by the LLM prompt completion, which means scores may exhibit over-confidence or hallucinations depending on the selected provider model.
-* **Public Repo Only**: The ingestion engine currently clones via public HTTP links and does not support OAuth/SSH private key repository authentication out-of-the-box.
+* **Public Repository Limit**: The ingestion engine clones repositories using public HTTPS links and does not support SSH key or OAuth token authorization for private repositories out-of-the-box.
 
 ---
 
