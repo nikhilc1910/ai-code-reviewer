@@ -1737,8 +1737,8 @@ if selected_tab == "Overview":
         st.markdown(
             """
             <div style="display:flex; align-items:center; gap:10px; justify-content:flex-end; height:38px;">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);" />
-                <span style="font-family:'Space Grotesk', sans-serif; font-size:0.9rem; color:var(--text); font-weight:500;">Sarah Jenkins ∨</span>
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border: 1px solid var(--border);" />
+                <span style="font-family:'Space Grotesk', sans-serif; font-size:0.9rem; color:var(--text); font-weight:500;">Nikhil C ∨</span>
             </div>
             """,
             unsafe_allow_html=True
