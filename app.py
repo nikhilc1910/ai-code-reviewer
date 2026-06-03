@@ -7,6 +7,17 @@ import textwrap
 import json
 import threading
 import time
+import sys
+import importlib
+
+# Force reload local modules to prevent Streamlit from using stale cached versions
+for mod in ["pipeline", "reviewer", "ingestion", "parser", "utils.progress", "utils.chunker", "agent.reviewer"]:
+    if mod in sys.modules:
+        try:
+            importlib.reload(sys.modules[mod])
+        except Exception:
+            pass
+
 from pipeline import run_pipeline
 from utils.progress import PipelineProgress
 from utils.formatter import comments_to_markdown, comments_to_json
