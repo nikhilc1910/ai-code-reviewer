@@ -182,7 +182,7 @@ def run_all_steps():
                 
             first_path, first_chunk = all_chunks[0]
             print(f"Submitting first chunk from {first_path} for LLM review...")
-            comments = review_code(first_chunk, file_path="antigravity_test.py")
+            comments = review_code(first_chunk, file_path="sample_test.py")
             
             print(f"Raw comments returned: {comments}")
             
